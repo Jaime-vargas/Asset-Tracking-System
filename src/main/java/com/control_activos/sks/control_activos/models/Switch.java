@@ -1,0 +1,20 @@
+package com.control_activos.sks.control_activos.models;
+
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+
+@Entity
+public class Switch extends Hardware {
+
+    private String idSwitch;
+    private String macAddress;
+    private String ipAddress;
+}
