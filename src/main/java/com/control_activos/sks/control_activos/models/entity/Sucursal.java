@@ -1,4 +1,4 @@
-package com.control_activos.sks.control_activos.models;
+package com.control_activos.sks.control_activos.models.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,14 +18,11 @@ public class Sucursal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+    @Column(nullable = false)
     private String name;
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
     @OneToMany
     private List<Hardware> hardware;
-
-
-
 }

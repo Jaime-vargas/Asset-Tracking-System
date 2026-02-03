@@ -1,6 +1,6 @@
 package com.control_activos.sks.control_activos.controller;
 
-import com.control_activos.sks.control_activos.dtos.ClientDTO;
+import com.control_activos.sks.control_activos.models.dto.ClientDTO;
 import com.control_activos.sks.control_activos.services.ClientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +18,8 @@ public class ClientController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ClientDTO>> getClients() {
-        List<ClientDTO> clients = clientService.getClients();
+    public ResponseEntity<List<ClientDTO>> getClientDTOList() {
+        List<ClientDTO> clients = clientService.getClientDTOList();
         return ResponseEntity.ok(clients);
     }
 

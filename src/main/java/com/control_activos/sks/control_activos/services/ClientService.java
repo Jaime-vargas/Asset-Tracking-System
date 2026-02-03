@@ -1,8 +1,8 @@
 package com.control_activos.sks.control_activos.services;
 
-import com.control_activos.sks.control_activos.dtos.ClientDTO;
+import com.control_activos.sks.control_activos.models.dto.ClientDTO;
 import com.control_activos.sks.control_activos.mapper.Mapper;
-import com.control_activos.sks.control_activos.models.Client;
+import com.control_activos.sks.control_activos.models.entity.Client;
 import com.control_activos.sks.control_activos.repository.ClientRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ public class ClientService {
 
     // --- Crud Methods for Client Entity ---
 
-    public List<ClientDTO> getClients() {
+    public List<ClientDTO> getClientDTOList() {
         List<Client> clients = clientRepository.findAll();
         return clients.stream().map(Mapper::entityToDTO).toList();
     }
@@ -31,19 +31,17 @@ public class ClientService {
         return Mapper.entityToDTO(savedClient);
     }
 
-    public ClientDTO updateClient(Long ClientId, ClientDTO clientDTO) {
-        Client client = clientRepository.findById(ClientId)
+    public ClientDTO updateClient(Long clientId, ClientDTO clientDTO) {
+        Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new RuntimeException("Client not found")); // #TODO: Custom Exception
         client.setName(clientDTO.getName());
         Client updatedClient = clientRepository.save(client);
         return Mapper.entityToDTO(updatedClient);
     }
 
-    public void deleteClient(Long ClientId) {
-        Client client = clientRepository.findById(ClientId)
-                .orElseThrow(() -> new RuntimeException("Client not found")); // #TODO: Custom Exception
-        clientRepository.delete(client);
+    public Client findClientById(Long clientId) {
+        return clientRepository.findById(clientId)
+                .orElseThrow(() -> new RuntimeException("Client not found"));
     }
-
 
 }

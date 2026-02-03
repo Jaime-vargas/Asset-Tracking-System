@@ -1,14 +1,10 @@
 package com.control_activos.sks.control_activos.mapper;
 
-import com.control_activos.sks.control_activos.dtos.*;
-import com.control_activos.sks.control_activos.models.*;
+import com.control_activos.sks.control_activos.models.dto.*;
+import com.control_activos.sks.control_activos.models.entity.*;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class Mapper {
@@ -37,8 +33,8 @@ public class Mapper {
         dto.setId(client.getId());
         dto.setName(client.getName());
         // Convert List<Sucursal> to List<String> //
-        List<String> sucursalNames = client.getSucursals().stream().map(Sucursal::getName).toList();
-        dto.setSucursalList(sucursalNames);
+        List<SucursalDTO> sucursalDTOList = client.getSucursals().stream().map(Mapper::entityToDTO).toList();
+        dto.setSucursalDTOList(sucursalDTOList);
         return dto;
     }
 

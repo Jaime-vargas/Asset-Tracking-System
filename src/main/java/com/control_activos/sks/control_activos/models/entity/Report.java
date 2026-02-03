@@ -1,4 +1,4 @@
-package com.control_activos.sks.control_activos.models;
+package com.control_activos.sks.control_activos.models.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

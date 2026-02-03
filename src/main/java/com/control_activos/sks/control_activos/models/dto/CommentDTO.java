@@ -1,4 +1,4 @@
-package com.control_activos.sks.control_activos.dtos;
+package com.control_activos.sks.control_activos.models.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,9 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class PhotoDTO {
+public class CommentDTO {
     private Long id;
-    private String filename;
-    private String contentType;
-    private String filePath;
+    private String text;
 }

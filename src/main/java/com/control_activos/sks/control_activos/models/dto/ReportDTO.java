@@ -1,7 +1,5 @@
-package com.control_activos.sks.control_activos.dtos;
+package com.control_activos.sks.control_activos.models.dto;
 
-import com.control_activos.sks.control_activos.models.Comment;
-import com.control_activos.sks.control_activos.models.Photo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
