@@ -24,7 +24,7 @@ public class Hardware {
     private Long id;
     @Column(nullable = false)
     private String name;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String serialNumber;
     @Column(nullable = false)
     private String model;

@@ -2,17 +2,21 @@ package com.control_activos.sks.control_activos.exception;
 
 import lombok.Getter;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 public class ErrorResponse {
     private final int status;
     private final String message;
-    private final LocalDateTime timestamp;
+    private final  OffsetDateTime timestamp;
 
     public ErrorResponse(int status, String message) {
         this.status = status;
         this.message = message;
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = OffsetDateTime.now();
     }
 }

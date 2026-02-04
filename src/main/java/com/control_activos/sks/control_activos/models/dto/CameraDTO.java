@@ -16,16 +16,16 @@ import java.util.List;
 public class CameraDTO {
 
     private Long id;
+    private String cameraId;
     private String name;
     private String serialNumber;
     private String model;
     private String location;
-    private LocalDateTime lastMaintenanceDate;
+    private String lastMaintenanceDate;
     private String sucursal;
     private String cliente;
-    private String idCamera;
     private String macAddress;
     private String ipAddress;
-    private List<ReportDTO> reports;
+    private List<ReportDTO> reports; // # TODO reports associated with the camera
 
 }

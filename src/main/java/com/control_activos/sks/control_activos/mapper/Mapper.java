@@ -5,34 +5,41 @@ import com.control_activos.sks.control_activos.models.entity.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class Mapper {
 
     public static CameraDTO entityToDTO (Camera camera) {
-        CameraDTO dto = new CameraDTO();
-        dto.setId(camera.getId());
-        dto.setName(camera.getName());
-        dto.setSerialNumber(camera.getSerialNumber());
-        dto.setModel(camera.getModel());
-        dto.setLocation(camera.getLocation());
-        dto.setLastMaintenanceDate(camera.getLastMaintenanceDate());
-        dto.setSucursal(camera.getSucursal().getName());
-        dto.setCliente(camera.getSucursal().getClient().getName());
-        dto.setIdCamera(camera.getIdCamera());
-        dto.setMacAddress(camera.getMacAddress());
-        dto.setIpAddress(camera.getIpAddress());
-        // Convert List<Report> to List<ReportDTO> //
-        List<ReportDTO> reportDTOList = camera.getReports().stream().map(Mapper::entityToDTO).toList();
-        dto.setReports(reportDTOList);
-        return dto;
+        String lastMaintenanceDate = camera.getLastMaintenanceDate() != null ?
+                camera.getLastMaintenanceDate().toString() : "N/A";
+
+        List<ReportDTO> reportDTOList = Optional.ofNullable(camera.getReports())
+                .orElse(List.of())
+                .stream()
+                .map(Mapper::entityToDTO)
+                .toList();
+
+        return new CameraDTO(
+                camera.getId(),
+                camera.getCameraId(),
+                camera.getName(),
+                camera.getSerialNumber(),
+                camera.getModel(),
+                camera.getLocation(),
+                lastMaintenanceDate,
+                camera.getSucursal().getName(),
+                camera.getSucursal().getClient().getName(),
+                camera.getMacAddress(),
+                camera.getIpAddress(),
+                reportDTOList
+        );
     }
 
     public static ClientDTO entityToDTO (Client client) {
         ClientDTO dto = new ClientDTO();
         dto.setId(client.getId());
         dto.setName(client.getName());
-        // Convert List<Sucursal> to List<String> //
         List<SucursalDTO> sucursalDTOList = client.getSucursals().stream().map(Mapper::entityToDTO).toList();
         dto.setSucursalDTOList(sucursalDTOList);
         return dto;

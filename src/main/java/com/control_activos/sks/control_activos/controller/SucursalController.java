@@ -1,6 +1,5 @@
 package com.control_activos.sks.control_activos.controller;
 
-import com.control_activos.sks.control_activos.mapper.Mapper;
 import com.control_activos.sks.control_activos.models.dto.SucursalDTO;
 import com.control_activos.sks.control_activos.services.SucursalService;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +15,14 @@ public class SucursalController {
     }
 
     @PostMapping("/{clientId}/sucursal")
-    public ResponseEntity<SucursalDTO> createSucursal(@PathVariable Long clientId, @RequestBody SucursalDTO sucursalDTO) {
-        sucursalDTO = sucursalService.createSucursal(clientId, sucursalDTO);
+    public ResponseEntity<SucursalDTO> saveSucursal(@PathVariable Long clientId, @RequestBody SucursalDTO sucursalDTO) {
+        sucursalDTO = sucursalService.saveSucursal(clientId, sucursalDTO);
+        return ResponseEntity.ok().body(sucursalDTO);
+}
+
+    @PutMapping("/{clientId}/sucursal/{sucursalId}")
+    public ResponseEntity<SucursalDTO> updateSucursal(@PathVariable Long clientId, @PathVariable Long sucursalId, @RequestBody SucursalDTO sucursalDTO) {
+        sucursalDTO = sucursalService.editSucursal(clientId, sucursalId, sucursalDTO);
         return ResponseEntity.ok().body(sucursalDTO);
     }
 }

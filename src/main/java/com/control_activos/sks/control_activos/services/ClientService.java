@@ -41,7 +41,7 @@ public class ClientService {
 
     public Client findClientById(Long clientId) {
         return clientRepository.findById(clientId)
-                .orElseThrow(() -> new RuntimeException("Client not found"));
+                .orElseThrow(() -> new RuntimeException("Client not found")); // #TODO: Custom Exception
     }
 
 }
