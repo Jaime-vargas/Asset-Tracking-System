@@ -17,9 +17,9 @@ import java.util.List;
 public class CameraService {
 
     private final CameraRepository cameraRepository;
-    private final formatDataValidationService formatDataValidationService;
+    private final FormatDataValidationService formatDataValidationService;
     private final SucursalService sucursalService;
-    public CameraService(CameraRepository cameraRepository, formatDataValidationService formatDataValidationService, SucursalService sucursalService) {
+    public CameraService(CameraRepository cameraRepository, FormatDataValidationService formatDataValidationService, SucursalService sucursalService) {
         this.cameraRepository = cameraRepository;
         this.formatDataValidationService = formatDataValidationService;
         this.sucursalService = sucursalService;

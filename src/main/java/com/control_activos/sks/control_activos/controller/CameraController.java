@@ -11,7 +11,7 @@ import java.util.List;
 @RequestMapping("/api/v1/sucursal")
 public class CameraController {
 
-    private CameraService cameraService;
+    private final CameraService cameraService;
     public CameraController(CameraService cameraService) {
         this.cameraService = cameraService;
     }

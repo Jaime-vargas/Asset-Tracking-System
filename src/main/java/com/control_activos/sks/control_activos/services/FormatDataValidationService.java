@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.regex.Pattern;
 
 @Service
-public class formatDataValidationService {
+public class FormatDataValidationService {
     Pattern macAddressPattern = Pattern.compile("^([0-9A-F]{2}:){5}([0-9A-F]{2})$");
     Pattern ipAddressPattern = Pattern.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
 

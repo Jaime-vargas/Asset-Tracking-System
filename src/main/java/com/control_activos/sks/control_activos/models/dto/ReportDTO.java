@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Getter
@@ -20,7 +21,7 @@ public class ReportDTO {
     private Boolean active;
     private String hardware;
     private String reportedBy;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime closedAt;
+    private String createdAt;
+    private String updatedAt;
+    private String closedAt;
 }

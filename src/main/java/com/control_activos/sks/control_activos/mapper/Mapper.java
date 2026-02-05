@@ -3,9 +3,12 @@ package com.control_activos.sks.control_activos.mapper;
 import com.control_activos.sks.control_activos.models.dto.*;
 import com.control_activos.sks.control_activos.models.entity.*;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.introspect.TypeResolutionContext;
 
 import java.util.List;
 import java.util.Optional;
+
+import static tools.jackson.databind.cfg.CoercionInputShape.EmptyString;
 
 @Service
 public class Mapper {
@@ -62,22 +65,36 @@ public class Mapper {
     }
 
     public static ReportDTO entityToDTO (Report report) {
-        ReportDTO dto = new ReportDTO();
-        dto.setId(report.getId());
-        dto.setTitle(report.getTitle());
-        // Convert List<Photo> to List<PhotoDTO> //
-        List<PhotoDTO> photoDTOList = report.getPhotos().stream().map(Mapper::entityToDTO).toList();
-        dto.setPhotos(photoDTOList);
-        // Convert List<Comment> to List<CommentDTO> //
-        List<CommentDTO> commentDTOList = report.getComments().stream().map(Mapper::entityToDTO).toList();
-        dto.setComments(commentDTOList);
-        dto.setActive(report.getActive());
-        dto.setHardware(report.getHardware().getName());
-        dto.setReportedBy(report.getReportedBy().getUsername());
-        dto.setCreatedAt(report.getCreatedAt());
-        dto.setUpdatedAt(report.getUpdatedAt());
-        dto.setClosedAt(report.getClosedAt());
-        return dto;
+        // DATES
+        String createdAt = report.getCreatedAt().toString();
+        String updatedAt = report.getUpdatedAt() != null ?
+                report.getUpdatedAt().toString() : "N/A";
+        String closedAt = report.getClosedAt() != null ?
+                report.getClosedAt().toString() : "N/A";
+
+        List<PhotoDTO> photoDTOList = Optional.ofNullable(report.getPhotos())
+                .orElse(List.of())
+                .stream()
+                .map(Mapper::entityToDTO)
+                .toList();
+        List<CommentDTO> commentDTOList = Optional.ofNullable(report.getComments())
+                .orElse(List.of())
+                .stream()
+                .map(Mapper::entityToDTO)
+                .toList();
+
+        return new ReportDTO(
+                report.getId(),
+                report.getTitle(),
+                photoDTOList,
+                commentDTOList,
+                report.getActive(),
+                report.getHardware().getName(),
+                report.getReportedBy().getFullName(),
+                createdAt,
+                updatedAt,
+                closedAt
+        );
     }
 
     public static SucursalDTO entityToDTO (Sucursal sucursal) {
@@ -85,5 +102,14 @@ public class Mapper {
         dto.setId(sucursal.getId());
         dto.setName(sucursal.getName());
         return dto;
+    }
+
+    public static UserEntityResponseDTO entityToDTO (UserEntity user) {
+        return new UserEntityResponseDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getFullName(),
+                user.getRole().getValue()
+        );
     }
 }

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Getter
@@ -30,10 +31,10 @@ public class Hardware {
     private String model;
     @Column(nullable = false)
     private String location;
-    private LocalDateTime lastMaintenanceDate;
+    private OffsetDateTime lastMaintenanceDate;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sucursal_id", nullable = false)
     private Sucursal sucursal;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "hardware", cascade = CascadeType.ALL)
     private List<Report> reports;
 }

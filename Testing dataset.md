@@ -86,18 +86,33 @@ Api url: /api/v1/camera/{camera_id}/reports
 # Request
 ```
 {
-  "reportType": "Mantenimiento Preventivo",
-  "description": "Limpieza de lente y verificación de conexiones.",
-  "date": "2024-06-15"
+  "title": "Cámara sin señal",
 }
 ```
 # Response
 ```
 {
-  "id": 1,
-  "reportType": "Mantenimiento Preventivo",
-  "description": "Limpieza de lente y verificación de conexiones.",     
-    "date": "2024-06-15",
-    "camera": "Cámara Principal Acceso 4"
+  "id": 100,
+  "title": "Cámara sin señal",
+  "active": true,
+  "hardware": "Fuente de poder",
+  "reportedBy": "Administrador",
+  "createdAt": "2025-01-22T08:00:00",
+  "updatedAt": "2025-01-22T08:30:00",
+  "closedAt": null,
+  "photos": [
+    {
+      "id": 2,
+      "filename": "sin_senal.png",
+      "contentType": "image/png",
+      "filePath": "/uploads/reportes/sin_senal.png"
+    }
+  ],
+  "comments": [
+    {
+      "id": 2,
+      "text": "No hay comunicación con el NVR"
+    }
+  ]
 }
 ```

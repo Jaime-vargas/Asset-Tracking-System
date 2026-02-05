@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Getter
@@ -22,7 +23,7 @@ public class Report {
     private Long id;
     @Column(nullable = false)
     private String title;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany( cascade = CascadeType.ALL)
     private List<Photo> photos;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Comment> comments;
@@ -34,7 +35,7 @@ public class Report {
     @ManyToOne
     @JoinColumn(name = "reported_by_id", nullable = false)
     private UserEntity reportedBy;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime closedAt;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
+    private OffsetDateTime closedAt;
 }
