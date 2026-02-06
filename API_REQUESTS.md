@@ -34,3 +34,36 @@
   - Response: JSON object of the updated client.
 
 ### Sucursal
+
+
+Recursos
+clients
+sucursales
+cameras
+hardware
+reports
+comments
+photos
+users
+Cada uno con:
+GET list
+GET by id
+POST
+PUT/PATCH
+DELETE
+Errores
+
+ApiException base
+
+ErrorResponse estándar
+¿Existe? → 404
+
+¿Duplicado? → 409
+
+¿Formato malo? → 400
+
+¿Estado no válido? → 409
+
+¿No autenticado? → 401
+
+¿Sin permiso? → 403

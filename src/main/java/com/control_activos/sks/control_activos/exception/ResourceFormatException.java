@@ -4,10 +4,9 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class ResourceFormatException extends RuntimeException{
-    private final int statusCode = HttpStatus.BAD_REQUEST.value();
-    public ResourceFormatException(String message) {
-        super(message);
-    }
+public class ResourceFormatException extends ApiException {
 
+    public ResourceFormatException(String message) {
+        super(message, HttpStatus.BAD_REQUEST);
+    }
 }

@@ -1,6 +1,9 @@
 package com.control_activos.sks.control_activos.services;
 
-import com.control_activos.sks.control_activos.exception.NotFoundResourceException;
+import com.control_activos.sks.control_activos.enums.OperationNotAllowedExceptionEnum;
+import com.control_activos.sks.control_activos.enums.ResourceNotFoundExceptionEnum;
+import com.control_activos.sks.control_activos.exception.OperationNotAllowedException;
+import com.control_activos.sks.control_activos.exception.ResourceNotFoundException;
 import com.control_activos.sks.control_activos.mapper.Mapper;
 import com.control_activos.sks.control_activos.models.dto.ReportDTO;
 import com.control_activos.sks.control_activos.models.entity.Hardware;
@@ -10,6 +13,7 @@ import com.control_activos.sks.control_activos.repository.HardwareRepository;
 import com.control_activos.sks.control_activos.repository.ReportRepository;
 import com.control_activos.sks.control_activos.repository.UserEntityRepository;
 import jakarta.transaction.Transactional;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,21 +55,18 @@ public class ReportService {
     public void closeReport (Long hardwareId, Long reportId) {
         Report report = findReportById(reportId);
         if(!report.getHardware().getId().equals(hardwareId)) {
-            throw new NotFoundResourceException("Report no coincide con hardware");
+            throw new OperationNotAllowedException(
+                    OperationNotAllowedExceptionEnum.REPORT_NOT_BELONG_TO_HARDWARE.getMessage());
         }
-        // # TODO - implements Error Enum
         report.setActive(false);
         report.setClosedAt(OffsetDateTime.now());
         reportRepository.save(report);
     }
 
-    public void updateDates(Report report) {
-
-    }
 
     public Report findReportById(Long reportId) {
         return reportRepository.findById(reportId).orElseThrow(
-                () -> new NotFoundResourceException("no encontrado "));
-        // # TODO - implements Error Enum
+                () -> new ResourceNotFoundException(
+                        ResourceNotFoundExceptionEnum.REPORT_NOT_FOUND.build(reportId)));
     }
 }

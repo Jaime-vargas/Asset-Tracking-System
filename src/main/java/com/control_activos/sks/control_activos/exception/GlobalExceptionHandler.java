@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.OffsetDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,27 +21,25 @@ public class GlobalExceptionHandler {
         String duplicated = matcher.find() ? matcher.group(1):"";
 
         ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                DuplicateResourceExceptionEnum.DUPLICATE_RESOURCE_EXCEPTION.getMessage(duplicated));
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.name(),
+                DuplicateResourceExceptionEnum.DUPLICATE_RESOURCE.build(duplicated),
+                OffsetDateTime.now()
+        );
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
-    @ExceptionHandler(NotFoundResourceException.class)
-    public ResponseEntity<ErrorResponse> handleNotFoundResourceException(NotFoundResourceException ex){
-        ErrorResponse errorResponse = new ErrorResponse(404, ex.getMessage());
-        return ResponseEntity.status(404).body(errorResponse);
+
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<?> ApiException(ApiException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                ex.getStatus().value(),
+                ex.getStatus().name(),
+                ex.getMessage(),
+                OffsetDateTime.now()
+        );
+        return ResponseEntity.status(ex.getStatus()).body(errorResponse);
     }
 
-    @ExceptionHandler(DuplicatedResourceException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicatedResourceException(DuplicatedResourceException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getStatusCode(), ex.getMessage());
-        return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
-    }
-
-    @ExceptionHandler(ResourceFormatException.class)
-    public ResponseEntity<ErrorResponse> handleFormattResourceExeption(ResourceFormatException ex){
-        ErrorResponse errorResponse = new ErrorResponse(ex.getStatusCode(), ex.getMessage());
-        return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
-    }
 
 }

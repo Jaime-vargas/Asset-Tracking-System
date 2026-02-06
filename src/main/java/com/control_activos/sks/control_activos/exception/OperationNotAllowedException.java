@@ -4,9 +4,9 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class DuplicatedResourceException extends ApiException {
+public class OperationNotAllowedException extends ApiException {
 
-    public DuplicatedResourceException(String message) {
+    public OperationNotAllowedException(String message) {
         super(message, HttpStatus.CONFLICT);
     }
 }

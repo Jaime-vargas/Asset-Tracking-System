@@ -1,9 +1,12 @@
 package com.control_activos.sks.control_activos.services;
 
+import com.control_activos.sks.control_activos.enums.ResourceNotFoundExceptionEnum;
+import com.control_activos.sks.control_activos.exception.ResourceNotFoundException;
 import com.control_activos.sks.control_activos.models.dto.ClientDTO;
 import com.control_activos.sks.control_activos.mapper.Mapper;
 import com.control_activos.sks.control_activos.models.entity.Client;
 import com.control_activos.sks.control_activos.repository.ClientRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,23 +20,22 @@ public class ClientService {
         this.clientRepository = clientRepository;
     }
 
-    // --- Crud Methods for Client Entity ---
-
     public List<ClientDTO> getClientDTOList() {
         List<Client> clients = clientRepository.findAll();
         return clients.stream().map(Mapper::entityToDTO).toList();
     }
 
-    public ClientDTO createClient(ClientDTO clientDTO) {
+    @Transactional
+    public ClientDTO saveClient(ClientDTO clientDTO) {
         Client client = new Client();
         client.setName(clientDTO.getName());
         Client savedClient = clientRepository.save(client);
         return Mapper.entityToDTO(savedClient);
     }
 
-    public ClientDTO updateClient(Long clientId, ClientDTO clientDTO) {
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new RuntimeException("Client not found")); // #TODO: Custom Exception
+    @Transactional
+    public ClientDTO editClient(Long clientId, ClientDTO clientDTO) {
+        Client client = findClientById(clientId);
         client.setName(clientDTO.getName());
         Client updatedClient = clientRepository.save(client);
         return Mapper.entityToDTO(updatedClient);
@@ -41,7 +43,8 @@ public class ClientService {
 
     public Client findClientById(Long clientId) {
         return clientRepository.findById(clientId)
-                .orElseThrow(() -> new RuntimeException("Client not found")); // #TODO: Custom Exception
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        ResourceNotFoundExceptionEnum.CLIENT_NOT_FOUND.build(clientId)));
     }
 
 }

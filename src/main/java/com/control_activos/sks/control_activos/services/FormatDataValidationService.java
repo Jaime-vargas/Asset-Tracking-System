@@ -13,7 +13,7 @@ public class FormatDataValidationService {
 
     public String validateMacAddressFormat(String macAddress) {
         if (macAddress == null) {
-            throw new ResourceFormatException(ResourceFormatExceptionEnum.INVALID_MAC_ADDRESS.getMessage());
+            throw new ResourceFormatException(ResourceFormatExceptionEnum.INVALID_MAC_ADDRESS.toString());
         }
         macAddress = macAddress.toUpperCase().trim();
         macAddress = macAddress.replaceAll("[-_\\s]+", ":");
@@ -32,5 +32,9 @@ public class FormatDataValidationService {
             throw new ResourceFormatException(ResourceFormatExceptionEnum.INVALID_IP_ADDRESS.getMessage());
         }
         return ipAddress;
+    }
+
+    public String lowerCase(String str) {
+        return str.trim().toLowerCase();
     }
 }

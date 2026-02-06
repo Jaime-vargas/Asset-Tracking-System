@@ -25,13 +25,13 @@ public class ClientController {
 
     @PostMapping
     public ResponseEntity<ClientDTO> createClient(@RequestBody ClientDTO clientDTO) {
-        ClientDTO createdClient = clientService.createClient(clientDTO);
+        ClientDTO createdClient = clientService.saveClient(clientDTO);
         return ResponseEntity.ok(createdClient);
     }
 
     @PutMapping("/{clientId}")
     public ResponseEntity<ClientDTO> updateClient(@PathVariable Long clientId, @RequestBody ClientDTO clientDTO) {
-        ClientDTO updatedClient = clientService.updateClient(clientId, clientDTO);
+        ClientDTO updatedClient = clientService.editClient(clientId, clientDTO);
         return ResponseEntity.ok(updatedClient);
     }
 
