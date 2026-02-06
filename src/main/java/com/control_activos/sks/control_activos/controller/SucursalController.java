@@ -14,13 +14,13 @@ public class SucursalController {
         this.sucursalService = sucursalService;
     }
 
-    @PostMapping("/{clientId}/sucursal")
+    @PostMapping("/{clientId}/sucursals")
     public ResponseEntity<SucursalDTO> saveSucursal(@PathVariable Long clientId, @RequestBody SucursalDTO sucursalDTO) {
         sucursalDTO = sucursalService.saveSucursal(clientId, sucursalDTO);
         return ResponseEntity.ok().body(sucursalDTO);
 }
 
-    @PutMapping("/{clientId}/sucursal/{sucursalId}")
+    @PutMapping("/{clientId}/sucursals/{sucursalId}")
     public ResponseEntity<SucursalDTO> updateSucursal(@PathVariable Long clientId, @PathVariable Long sucursalId, @RequestBody SucursalDTO sucursalDTO) {
         sucursalDTO = sucursalService.editSucursal(clientId, sucursalId, sucursalDTO);
         return ResponseEntity.ok().body(sucursalDTO);

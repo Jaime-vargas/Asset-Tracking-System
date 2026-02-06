@@ -2,27 +2,17 @@ package com.control_activos.sks.control_activos.mapper;
 
 import com.control_activos.sks.control_activos.models.dto.*;
 import com.control_activos.sks.control_activos.models.entity.*;
+import jakarta.annotation.Nullable;
 import org.springframework.stereotype.Service;
-import tools.jackson.databind.introspect.TypeResolutionContext;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
-
-import static tools.jackson.databind.cfg.CoercionInputShape.EmptyString;
 
 @Service
 public class Mapper {
 
     public static CameraDTO entityToDTO (Camera camera) {
-        String lastMaintenanceDate = camera.getLastMaintenanceDate() != null ?
-                camera.getLastMaintenanceDate().toString() : "N/A";
-
-        List<ReportDTO> reportDTOList = Optional.ofNullable(camera.getReports())
-                .orElse(List.of())
-                .stream()
-                .map(Mapper::entityToDTO)
-                .toList();
-
         return new CameraDTO(
                 camera.getId(),
                 camera.getCameraId(),
@@ -30,29 +20,31 @@ public class Mapper {
                 camera.getSerialNumber(),
                 camera.getModel(),
                 camera.getLocation(),
-                lastMaintenanceDate,
+                Optional.ofNullable(camera.getLastMaintenanceDate()).map(OffsetDateTime::toString).orElse("N/A"),
                 camera.getSucursal().getName(),
                 camera.getSucursal().getClient().getName(),
                 camera.getMacAddress(),
                 camera.getIpAddress(),
-                reportDTOList
+                Optional.ofNullable(camera.getReports()).orElse(List.of()).stream()
+                        .map(Mapper::entityToDTO).toList()
         );
     }
 
     public static ClientDTO entityToDTO (Client client) {
-        ClientDTO dto = new ClientDTO();
-        dto.setId(client.getId());
-        dto.setName(client.getName());
-        List<SucursalDTO> sucursalDTOList = client.getSucursals().stream().map(Mapper::entityToDTO).toList();
-        dto.setSucursalDTOList(sucursalDTOList);
-        return dto;
+        return new ClientDTO(
+                client.getId(),
+                client.getName(),
+                Optional.ofNullable(client.getSucursals()).orElse(List.of())
+                        .stream().map(Mapper::entityToDTO).toList()
+        );
     }
 
     public static CommentDTO entityToDTO (Comment comment) {
-        CommentDTO dto = new CommentDTO();
-        dto.setId(comment.getId());
-        dto.setText(comment.getText());
-        return dto;
+        return new  CommentDTO(
+                comment.getId(),
+                comment.getText(),
+                comment.getUser().getFullName()
+        );
     }
 
     public static PhotoDTO entityToDTO (Photo photo) {
@@ -65,43 +57,25 @@ public class Mapper {
     }
 
     public static ReportDTO entityToDTO (Report report) {
-        // DATES
-        String createdAt = report.getCreatedAt().toString();
-        String updatedAt = report.getUpdatedAt() != null ?
-                report.getUpdatedAt().toString() : "N/A";
-        String closedAt = report.getClosedAt() != null ?
-                report.getClosedAt().toString() : "N/A";
-
-        List<PhotoDTO> photoDTOList = Optional.ofNullable(report.getPhotos())
-                .orElse(List.of())
-                .stream()
-                .map(Mapper::entityToDTO)
-                .toList();
-        List<CommentDTO> commentDTOList = Optional.ofNullable(report.getComments())
-                .orElse(List.of())
-                .stream()
-                .map(Mapper::entityToDTO)
-                .toList();
-
         return new ReportDTO(
                 report.getId(),
                 report.getTitle(),
-                photoDTOList,
-                commentDTOList,
+                Optional.ofNullable(report.getPhotos()).orElse(List.of()).stream().map(Mapper::entityToDTO).toList(),
+                Optional.ofNullable(report.getComments()).orElse(List.of()).stream().map(Mapper::entityToDTO).toList(),
                 report.getActive(),
                 report.getHardware().getName(),
                 report.getReportedBy().getFullName(),
-                createdAt,
-                updatedAt,
-                closedAt
+                report.getCreatedAt().toString(),
+                Optional.ofNullable(report.getUpdatedAt()).map(OffsetDateTime::toString).orElse("N/A"),
+                Optional.ofNullable(report.getClosedAt()).map(OffsetDateTime::toString).orElse("N/A")
         );
     }
 
     public static SucursalDTO entityToDTO (Sucursal sucursal) {
-        SucursalDTO dto = new SucursalDTO();
-        dto.setId(sucursal.getId());
-        dto.setName(sucursal.getName());
-        return dto;
+        return new SucursalDTO(
+                sucursal.getId(),
+                sucursal.getName()
+        );
     }
 
     public static UserEntityResponseDTO entityToDTO (UserEntity user) {

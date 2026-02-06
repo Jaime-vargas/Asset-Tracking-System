@@ -7,18 +7,22 @@ public enum OperationNotAllowedExceptionEnum {
 
     OPERATION_NOT_ALLOWED("Operation not allowed"),
 
+    // CAMERA
+    CAMERA_NOT_BELONG_TO_SUCURSAL("Camera does not belong to the specified sucursal"),
+
+    // COMMENT
+    COMMENT_NOT_BELONG_TO_REPORT("Comment does not belong to the specified report"),
+
     // REPORT
     REPORT_ALREADY_CLOSED("Report is already closed"),
     REPORT_NOT_BELONG_TO_HARDWARE("Report does not belong to hardware"),
-
-    // CAMERA
-    CAMERA_NOT_BELONG_TO_SUCURSAL("Camera does not belong to the specified sucursal"),
 
     // SUCURSAL
     SUCURSAL_NOT_BELONG_TO_CLIENT("Sucursal does not belong to the specified client"),
 
     //USER
-    USER_PASSWORD_DONT_MATCH("User old password does not match");
+    USER_PASSWORD_DONT_MATCH("User old password does not match"),
+    USER_COMMENT_DONT_MATCH("Actual user does not belong to comment");
 
     private final String message;
 

@@ -25,7 +25,7 @@ public class Report {
     private String title;
     @OneToMany( cascade = CascadeType.ALL)
     private List<Photo> photos;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
     private List<Comment> comments;
     @Column(nullable = false)
     private Boolean active;

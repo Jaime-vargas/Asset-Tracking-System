@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/users")
 public class UserEntityController {
 
     private final UserEntityService userEntityService;
@@ -26,7 +26,7 @@ public class UserEntityController {
         return ResponseEntity.ok().body(userEntityDTOList);
     }
 
-    @GetMapping("/role")
+    @GetMapping("/roles")
     public ResponseEntity<List<UserEntityRoleDTO>> getUserEntityRoleDTOList(){
         List<UserEntityRoleDTO> userEntityRoleDTOList = userEntityService.getUserRoleList();
         return ResponseEntity.ok().body(userEntityRoleDTOList);
@@ -44,7 +44,7 @@ public class UserEntityController {
         return ResponseEntity.ok().body(updatedUserEntityDTO);
     }
 
-    @PutMapping("/password/{userEntityId}")
+    @PutMapping("/{userEntityId}/password")
     public ResponseEntity<?> updateUserEntityPassword(@PathVariable Long userEntityId, @RequestBody UserEntityPasswordRequestDTO userEntityPasswordRequestDTO){
         userEntityService.updateUserEntityPassword(userEntityId, userEntityPasswordRequestDTO);
         return ResponseEntity.noContent().build();
