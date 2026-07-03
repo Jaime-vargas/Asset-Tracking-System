@@ -16,6 +16,12 @@ public enum OperationNotAllowedExceptionEnum {
     // REPORT
     REPORT_ALREADY_CLOSED("Report is already closed"),
     REPORT_NOT_BELONG_TO_HARDWARE("Report does not belong to hardware"),
+    // REPORT ENUM
+    INVALID_REPORT_PRIORITY("Invalid report priority. Valid values are: LOW, MEDIUM, HIGH"),
+
+    // REPORT DATES
+    INVALID_DUE_DATE("Invalid due date. Due date must be after the current date and time"),
+    INVALID_DUE_DATE_FORMAT("Invalid due date format. Expected format: yyyy-MM-dd'T'HH:mm:ssXXX"),
 
     // SUCURSAL
     SUCURSAL_NOT_BELONG_TO_CLIENT("Sucursal does not belong to the specified client"),
