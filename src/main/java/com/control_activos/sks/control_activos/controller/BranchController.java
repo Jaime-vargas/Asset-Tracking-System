@@ -1,7 +1,8 @@
 package com.control_activos.sks.control_activos.controller;
 
 import com.control_activos.sks.control_activos.models.dto.BranchDTO;
-import com.control_activos.sks.control_activos.models.dto.hardwareDTO.CameraRequestDTO;
+import com.control_activos.sks.control_activos.models.dto.cameraDTO.CameraEditRequestDTO;
+import com.control_activos.sks.control_activos.models.dto.cameraDTO.CameraEditResponseDTO;
 import com.control_activos.sks.control_activos.models.dto.hardwareDTO.HardwareDetailDTO;
 import com.control_activos.sks.control_activos.models.dto.hardwareDTO.HardwareTableDTO;
 import com.control_activos.sks.control_activos.services.BranchService;
@@ -20,14 +21,11 @@ public class BranchController {
     private final BranchService branchService;
     private final CameraService cameraService;
 
-<<<<<<< HEAD
+
     /** Branch Endpoints */
-    @PutMapping("/{branchId}")
-    public ResponseEntity<BranchDTO> updateSucursal(@PathVariable Long branchId, @RequestBody BranchDTO branchDTO) {
-=======
+
     @PutMapping("/{branchId}")
     public ResponseEntity<BranchDTO> updateBranch(@PathVariable Long branchId, @RequestBody BranchDTO branchDTO) {
->>>>>>> 0464c3d (new contrllers on branch and client entities)
         branchDTO = branchService.editBranch(branchId, branchDTO);
         return ResponseEntity.ok().body(branchDTO);
     }
@@ -39,9 +37,10 @@ public class BranchController {
         return ResponseEntity.ok().body(hardwareTableDTO);
     }
 
-    @PostMapping("/{branchId}/hardware")
-    public ResponseEntity<HardwareDetailDTO>createCamera(@PathVariable Long branchId, @RequestBody CameraRequestDTO cameraRequestDTO){
-        HardwareDetailDTO hardwareDetailDTO = cameraService.saveCamera(branchId, cameraRequestDTO);
-        return ResponseEntity.ok().body(hardwareDetailDTO);
+    @PostMapping("/{branchId}/hardware/camera")
+    public ResponseEntity<CameraEditResponseDTO> saveCamera(@PathVariable Long branchId, @RequestBody CameraEditRequestDTO cameraEditRequestDTO){
+        CameraEditResponseDTO camera = cameraService.saveCamera(branchId, cameraEditRequestDTO);
+        return ResponseEntity.ok().body(camera);
     }
+
 }
