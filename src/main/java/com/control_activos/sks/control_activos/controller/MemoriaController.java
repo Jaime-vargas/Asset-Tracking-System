@@ -26,7 +26,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 
 @RestController
@@ -41,11 +40,28 @@ public class MemoriaController {
     @Autowired
     SpringTemplateEngine templateEngine;
 
+    /**
+     * ALL METHODS IN THIS CONTROLLER MUST BE REFACTORED TO USE THE SERVICE LAYER, AND MUST BE OPTIMIZED TO AVOID REPEATED CODE AND ORGANIZED
+     *
+     */
+
+    @GetMapping("{cameraId}/photoReportByCameraID")
+    public ResponseEntity<byte[]> photoReportByCameraId (@PathVariable Long cameraId) {
+
+        byte[] pdf = generatePhotoReportByCameraId(cameraId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"report.pdf\"");
+        return ResponseEntity.ok().headers(headers).body(pdf);
+
+    };
+
     @GetMapping("{branchId}/photoReport")
     public ResponseEntity<byte[]> photoReport (@PathVariable Long branchId) {
 
 
-        byte[] pdf = generatePhotoReportPdf(branchId);
+        byte[] pdf = generatePhotoReportByBranchId(branchId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
@@ -108,8 +124,41 @@ public class MemoriaController {
 
     }
 
+    public byte[] generatePhotoReportByCameraId(Long cameraId) {
 
-    public byte[] generatePhotoReportPdf(Long branchId) {
+        Camera camera = cameraService.findCameraById(cameraId);
+        Branch branch = camera.getBranch();
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy",
+                Locale.of("es", "MX"));
+        String actualDate = now.format(formatter);
+
+        Context context = new Context();
+        context.setVariable("branch", branch);
+        context.setVariable("cameras", List.of(camera));
+        context.setVariable("actualDate", actualDate);
+
+        String html = templateEngine.process("PhotoReport", context);
+
+        try(ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
+
+            PdfRendererBuilder builder = new PdfRendererBuilder();
+            builder.useFastMode();
+
+            String baseUrl = new File(".")
+                    .toURI()
+                    .toString();
+            builder.withHtmlContent(html, baseUrl);
+
+            builder.toStream(outputStream);
+            builder.run();
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating PDF", e);
+        }
+    }
+
+    public byte[] generatePhotoReportByBranchId(Long branchId) {
 
         List<Camera> cameras = cameraRepository.findByBranchId(branchId);
 
@@ -144,5 +193,10 @@ public class MemoriaController {
             throw new RuntimeException("Error generating PDF", e);
         }
     }
+
+    /**
+     * ALL METHODS IN THIS CONTROLLER MUST BE REFACTORED TO USE THE SERVICE LAYER, AND MUST BE OPTIMIZED TO AVOID REPEATED CODE AND ORGANIZED
+     *
+     */
 
 }
