@@ -1,9 +1,8 @@
 package com.control_activos.sks.control_activos.controller;
 
 import com.control_activos.sks.control_activos.models.dto.BranchDTO;
-import com.control_activos.sks.control_activos.models.dto.ClientDTO;
-import com.control_activos.sks.control_activos.models.dto.PhotoDTO;
 import com.control_activos.sks.control_activos.models.dto.branchDTO.BranchTableDTO;
+import com.control_activos.sks.control_activos.models.dto.clientDTO.ClientDTO;
 import com.control_activos.sks.control_activos.models.dto.clientDTO.ClientTableDTO;
 import com.control_activos.sks.control_activos.services.BranchService;
 import com.control_activos.sks.control_activos.services.ClientService;
@@ -24,11 +23,6 @@ public class ClientController {
     private final ClientService clientService;
     private final FilesService filesService;
 
-
-    public ClientController(ClientService clientService, FilesService filesService) {
-        this.clientService = clientService;
-        this.filesService = filesService;
-    }
     /** Client endpoints */
     @GetMapping
     public ResponseEntity<List<ClientTableDTO>> getAllClientTableDTO() {
@@ -48,18 +42,13 @@ public class ClientController {
         return ResponseEntity.ok(updatedClient);
     }
 
-
-
-
-
-
     @PostMapping("/{clientId}/photo")
-    public ResponseEntity<ClientTableDTO> addPhoto (@PathVariable Long clientId,
-            @RequestPart("file") MultipartFile file,
-            @RequestParam(defaultValue = "false") Boolean replaceExisting) {
-        ClientTableDTO updatedClient = filesService.UploadCligit entPhoto(clientId, file, replaceExisting);
+    public ResponseEntity<ClientDTO> addPhoto (@PathVariable Long clientId,
+                                               @RequestPart("file") MultipartFile file,
+                                               @RequestParam(defaultValue = "false") Boolean replaceExisting) {
 
-        return ResponseEntity.ok(updatedClient);
+        ClientDTO clientDTO = filesService.UploadClientPhoto(clientId, file, replaceExisting);
+        return ResponseEntity.ok().body(clientDTO);
     }
 
     /** Branch related endpoints */
