@@ -3,7 +3,9 @@ package com.control_activos.sks.control_activos.services;
 import com.control_activos.sks.control_activos.enums.CameraPhotoUploads;
 import com.control_activos.sks.control_activos.enums.FileEnum;
 import com.control_activos.sks.control_activos.exception.FileException;
-import com.control_activos.sks.control_activos.models.dto.clientDTO.ClientTableDTO;
+import com.control_activos.sks.control_activos.mapper.ClientMapper;
+import com.control_activos.sks.control_activos.models.dto.clientDTO.ClientDTO;
+import com.control_activos.sks.control_activos.models.dto.hardwareDTO.HardwareDetailDTO;
 import com.control_activos.sks.control_activos.models.entity.Camera;
 import com.control_activos.sks.control_activos.models.entity.Client;
 import com.control_activos.sks.control_activos.models.entity.Photo;
@@ -27,17 +29,19 @@ public class FilesService {
     private final ClientService clientService;
     private final PhotoRepository photoRepository;
     private final ReportService reportService;
+    private final HardwareService hardwareService;
 
 
-    public FilesService(CameraService cameraService, ClientService clientService, PhotoRepository photoRepository, ReportService reportService) {
+    public FilesService(CameraService cameraService, ClientService clientService, PhotoRepository photoRepository, ReportService reportService, HardwareService hardwareService) {
         this.cameraService = cameraService;
         this.clientService = clientService;
         this.photoRepository = photoRepository;
         this.reportService = reportService;
+        this.hardwareService = hardwareService;
     }
 
     @Transactional
-    public ClientTableDTO UploadClientPhoto(Long clientId, MultipartFile file, Boolean replaceExisting) {
+    public ClientDTO UploadClientPhoto(Long clientId, MultipartFile file, Boolean replaceExisting) {
         Client client = clientService.findClientById(clientId);
         validateIsImage(file);
 
@@ -58,12 +62,12 @@ public class FilesService {
         }
 
         client.setPhoto(saveFileToPath(file, storePath));
-
+        return ClientMapper.toClientDTO(client);
     }
 
     @Transactional
-    public void uploadCameraPhoto(Long hardwareID, MultipartFile file,
-                                  CameraPhotoUploads photoType, Boolean replaceExisting) {
+    public HardwareDetailDTO uploadCameraPhoto(Long hardwareID, MultipartFile file,
+                                               CameraPhotoUploads photoType, Boolean replaceExisting) {
         Camera camera = cameraService.findCameraById(hardwareID);
 
         validateIsImage(file);
@@ -91,6 +95,7 @@ public class FilesService {
             case VIEW_FROM_CAMERA -> camera.setViewFromCameraPhoto(saveFileToPath(file, storePath));
             case VIEW_TO_CAMERA -> camera.setViewToCameraPhoto(saveFileToPath(file, storePath));
         }
+        return hardwareService.getHardwareById(hardwareID);
     }
 
     @Transactional
