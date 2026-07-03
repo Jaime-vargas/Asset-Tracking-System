@@ -1,6 +1,9 @@
 package com.control_activos.sks.control_activos.controller;
 
 import com.control_activos.sks.control_activos.enums.CameraPhotoUploads;
+import com.control_activos.sks.control_activos.models.dto.cameraDTO.CameraEditRequestDTO;
+import com.control_activos.sks.control_activos.models.dto.cameraDTO.CameraEditResponseDTO;
+import com.control_activos.sks.control_activos.models.dto.hardwareDTO.HardwareDetailDTO;
 import com.control_activos.sks.control_activos.models.entity.Camera;
 import com.control_activos.sks.control_activos.services.CameraService;
 import com.control_activos.sks.control_activos.services.FilesService;
@@ -9,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/v1/hardware/{hardwareID}/camera")
+@RequestMapping("/api/v1/hardware/{cameraId}/camera")
 public class CameraController {
 
     private final CameraService cameraService;
@@ -19,15 +22,25 @@ public class CameraController {
         this.cameraService = cameraService;
     }
 
+    @GetMapping
+    public ResponseEntity<CameraEditResponseDTO> getCameraEditData(@PathVariable Long cameraId) {
+        CameraEditResponseDTO camera = cameraService.getCameraEditData(cameraId);
+        return ResponseEntity.ok().body(camera);
+    }
 
+    @PutMapping
+    public ResponseEntity<CameraEditResponseDTO> updateCamera(@PathVariable Long cameraId, @RequestBody CameraEditRequestDTO cameraEditRequestDTO) {
+        CameraEditResponseDTO camera = cameraService.updateCamera(cameraId, cameraEditRequestDTO);
+        return ResponseEntity.ok().body(camera);
 
+    }
 
     @PostMapping("/photos")
-    public ResponseEntity<?> addPhoto(@PathVariable Long hardwareID, @RequestPart("file") MultipartFile file,
+    public ResponseEntity<HardwareDetailDTO> addPhoto(@PathVariable Long cameraId, @RequestPart("file") MultipartFile file,
                                       @RequestParam CameraPhotoUploads photoType,
                                       @RequestParam(defaultValue = "false") Boolean replaceExisting) {
-        filesService.uploadCameraPhoto(hardwareID, file, photoType, replaceExisting);
-        return ResponseEntity.noContent().build();
+        HardwareDetailDTO hardwareDetailDTO = filesService.uploadCameraPhoto(cameraId, file, photoType, replaceExisting);
+        return ResponseEntity.ok().body(hardwareDetailDTO);
     }
 
     /*
