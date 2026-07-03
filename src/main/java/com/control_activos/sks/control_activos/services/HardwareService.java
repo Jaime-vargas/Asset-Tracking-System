@@ -15,6 +15,7 @@ import com.control_activos.sks.control_activos.repository.HardwareRepository;
 import com.control_activos.sks.control_activos.repository.ReportRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,8 +46,16 @@ public class HardwareService {
     public HardwareDetailDTO getHardwareById(Long hardwareID) {
         Hardware hardware = findHardwareById(hardwareID);
         List<Report> recentActiveReports = reportRepository.findTop4ByHardwareIdOrderByStatusDescDueDateAsc(hardwareID);
-
         HardwareDetailDTO hardwareDetailDTO = HardwareMapper.hardwareDetailDTO(hardware);
+
+        // Reports count
+        long activeReportsCount = hardware.getReports().stream().filter(Report::getStatus).count();
+        long overdueReportsCount = hardware.getReports().stream()
+                .filter(report -> report.getStatus() && report.getDueDate().isBefore(OffsetDateTime.now()))
+                .count();
+        hardwareDetailDTO.setActiveReportsCount(activeReportsCount);
+        hardwareDetailDTO.setOverdueReportsCount(overdueReportsCount);
+
         List<ReportHistoryDTO> reportHistoryDTO = recentActiveReports.stream().map(ReportMapper::toReportHistoryDTO).toList();
         hardwareDetailDTO.setRecentActiveReports(reportHistoryDTO);
         return hardwareDetailDTO;
