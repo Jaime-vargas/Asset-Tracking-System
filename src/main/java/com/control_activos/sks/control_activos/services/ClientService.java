@@ -3,12 +3,12 @@ package com.control_activos.sks.control_activos.services;
 import com.control_activos.sks.control_activos.enums.ResourceNotFoundExceptionEnum;
 import com.control_activos.sks.control_activos.exception.ResourceNotFoundException;
 import com.control_activos.sks.control_activos.mapper.BranchMapper;
+import com.control_activos.sks.control_activos.mapper.ClientMapper;
 import com.control_activos.sks.control_activos.mapper.PhotoMapper;
 import com.control_activos.sks.control_activos.models.dto.BranchDTO;
-import com.control_activos.sks.control_activos.models.dto.ClientDTO;
 import com.control_activos.sks.control_activos.mapper.Mapper;
-import com.control_activos.sks.control_activos.models.dto.PhotoDTO;
 import com.control_activos.sks.control_activos.models.dto.branchDTO.BranchTableDTO;
+import com.control_activos.sks.control_activos.models.dto.clientDTO.ClientDTO;
 import com.control_activos.sks.control_activos.models.dto.clientDTO.ClientTableDTO;
 import com.control_activos.sks.control_activos.models.dto.clientDTO.ClientTableRowDTO;
 import com.control_activos.sks.control_activos.models.dto.reportDTO.ReportCountDTO;
@@ -53,7 +53,7 @@ public class ClientService {
         Client client = new Client();
         client.setName(clientDTO.getName());
         Client savedClient = clientRepository.save(client);
-        return Mapper.entityToDTO(savedClient);
+        return ClientMapper.toClientDTO(savedClient);
     }
 
     // UPDATE CLIENT
@@ -62,7 +62,7 @@ public class ClientService {
         Client client = findClientById(clientId);
         client.setName(clientDTO.getName());
         Client updatedClient = clientRepository.save(client);
-        return Mapper.entityToDTO(updatedClient);
+        return ClientMapper.toClientDTO(updatedClient);
     }
 
     /** Branch related services */
