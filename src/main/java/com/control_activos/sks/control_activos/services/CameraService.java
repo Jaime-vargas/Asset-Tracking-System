@@ -1,16 +1,11 @@
 package com.control_activos.sks.control_activos.services;
 
-import com.control_activos.sks.control_activos.enums.DuplicateResourceExceptionEnum;
-import com.control_activos.sks.control_activos.enums.OperationNotAllowedExceptionEnum;
 import com.control_activos.sks.control_activos.enums.ResourceNotFoundExceptionEnum;
-import com.control_activos.sks.control_activos.exception.DuplicatedResourceException;
-import com.control_activos.sks.control_activos.exception.OperationNotAllowedException;
 import com.control_activos.sks.control_activos.exception.ResourceNotFoundException;
 import com.control_activos.sks.control_activos.mapper.CameraMapper;
 import com.control_activos.sks.control_activos.mapper.HardwareMapper;
-import com.control_activos.sks.control_activos.mapper.Mapper;
-import com.control_activos.sks.control_activos.models.dto.hardwareDTO.CameraDetailDTO;
-import com.control_activos.sks.control_activos.models.dto.hardwareDTO.CameraRequestDTO;
+import com.control_activos.sks.control_activos.models.dto.cameraDTO.CameraEditRequestDTO;
+import com.control_activos.sks.control_activos.models.dto.cameraDTO.CameraEditResponseDTO;
 import com.control_activos.sks.control_activos.models.dto.hardwareDTO.HardwareDetailDTO;
 import com.control_activos.sks.control_activos.models.entity.Camera;
 import com.control_activos.sks.control_activos.models.entity.Branch;
@@ -18,7 +13,7 @@ import com.control_activos.sks.control_activos.repository.CameraRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.OffsetDateTime;
 
 @Service
 public class CameraService {
@@ -32,18 +27,43 @@ public class CameraService {
         this.branchService = branchService;
     }
 
-    @Transactional
-    public HardwareDetailDTO saveCamera(Long branchId, CameraRequestDTO cameraRequestDTO) {
-        Branch branch = branchService.findBranchById(branchId);
-        formatDataValidation(cameraRequestDTO);
-        Camera camera = CameraMapper.toCameraEntity(cameraRequestDTO, branch);
-        camera = cameraRepository.save(camera);
-        return HardwareMapper.hardwareDetailDTO(camera);
+    public CameraEditResponseDTO getCameraEditData(Long cameraId) {
+        Camera camera = findCameraById(cameraId);
+        return CameraMapper.toCameraEditResponseDto(camera);
     }
 
-    public void formatDataValidation(CameraRequestDTO cameraRequestDTO) {
-        cameraRequestDTO.setMacAddress(formatDataValidationService.validateMacAddressFormat(cameraRequestDTO.getMacAddress()));
-        cameraRequestDTO.setIpAddress(formatDataValidationService.validateIpAddressFormat(cameraRequestDTO.getIpAddress()));
+    @Transactional
+    public CameraEditResponseDTO saveCamera(Long branchId, CameraEditRequestDTO cameraEditRequestDTO) {
+        Branch branch = branchService.findBranchById(branchId);
+        formatDataValidation(cameraEditRequestDTO);
+        Camera camera = CameraMapper.toCameraEntity(cameraEditRequestDTO, branch);
+        camera = cameraRepository.save(camera);
+        return CameraMapper.toCameraEditResponseDto(camera);
+    }
+
+    @Transactional
+    public CameraEditResponseDTO updateCamera(Long cameraId, CameraEditRequestDTO cameraEditRequestDTO) {
+        Camera camera = findCameraById(cameraId);
+        formatDataValidation(cameraEditRequestDTO);
+        camera.setName(cameraEditRequestDTO.getName());
+        camera.setBrand(cameraEditRequestDTO.getBrand());
+        camera.setSerialNumber(cameraEditRequestDTO.getSerialNumber());
+        camera.setModel(cameraEditRequestDTO.getModel());
+        camera.setLocation(cameraEditRequestDTO.getLocation());
+        camera.setCameraId(cameraEditRequestDTO.getCameraId());
+        camera.setMacAddress(cameraEditRequestDTO.getMacAddress());
+        camera.setIpAddress(cameraEditRequestDTO.getIpAddress());
+        camera.setIdf(cameraEditRequestDTO.getIdf());
+        camera.setUsername(cameraEditRequestDTO.getUsername());
+        camera.setPassword(cameraEditRequestDTO.getPassword());
+        camera.setLastUpdate(OffsetDateTime.now());
+        camera = cameraRepository.save(camera);
+        return CameraMapper.toCameraEditResponseDto(camera);
+    }
+
+    public void formatDataValidation(CameraEditRequestDTO cameraEditRequestDTO) {
+        cameraEditRequestDTO.setMacAddress(formatDataValidationService.validateMacAddressFormat(cameraEditRequestDTO.getMacAddress()));
+        cameraEditRequestDTO.setIpAddress(formatDataValidationService.validateIpAddressFormat(cameraEditRequestDTO.getIpAddress()));
     }
 
     public Camera findCameraById(Long cameraId) {
@@ -79,10 +99,7 @@ public class CameraService {
     public List<CameraDetailDTO> getCameraDTOList (Long sucursalId){
         List<Camera> cameraList = cameraRepository.findByBranchId(sucursalId);
         return cameraList.stream().map(Mapper::entityToDTO).toList();
-
     }
-
-
 
     @Transactional
     public CameraDetailDTO editCamera(Long branchId, Long cameraId, CameraDetailDTO cameraDetailDTO) {
@@ -108,11 +125,6 @@ public class CameraService {
         camera.setMacAddress(cameraDetailDTO.getMacAddress());
         camera.setIpAddress(cameraDetailDTO.getIpAddress());
     }
-
-
-
-
-
       */
 }
 
