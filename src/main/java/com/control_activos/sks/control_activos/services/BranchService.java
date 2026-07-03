@@ -19,6 +19,7 @@ import com.control_activos.sks.control_activos.repository.BranchRepository;
 import com.control_activos.sks.control_activos.repository.HardwareRepository;
 import com.control_activos.sks.control_activos.repository.ReportRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -27,20 +28,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class BranchService {
 
     private final ClientService clientService;
     private final BranchRepository branchRepository;
     private final HardwareRepository hardwareRepository;
     private final ReportRepository reportRepository;
-    public BranchService(ClientService clientService, BranchRepository branchRepository, HardwareRepository hardwareRepository, ReportRepository reportRepository) {
-        this.clientService = clientService;
-        this.branchRepository = branchRepository;
-        this.hardwareRepository = hardwareRepository;
-        this.reportRepository = reportRepository;
-    }
 
-<<<<<<< HEAD
     /** Branch services */
     @Transactional
     public BranchDTO editBranch(Long branchId, BranchDTO branchDTO) {
@@ -51,8 +46,6 @@ public class BranchService {
     }
 
     /** Hardware related services */
-=======
->>>>>>> b6960bb (new services for users coment now implements users, updatoes on branch and client services)
     public List<HardwareTableDTO> getHardwareByBranchId(@PathVariable Long branchId){
         findBranchById(branchId);
         List<Hardware> hardwareList = hardwareRepository.findHardwareByBranchId(branchId);
@@ -60,9 +53,8 @@ public class BranchService {
         return mergeHardwareAndReportsToDTO(hardwareList, activeReports);
     }
 
-<<<<<<< HEAD
+
     /** Helper methods */
-=======
     @Transactional
     public BranchDTO saveBranch(Long clientId, BranchDTO branchDTO) {
         Client client = clientService.findClientById(clientId);
@@ -73,15 +65,7 @@ public class BranchService {
         return Mapper.entityToDTO(branch);
     }
 
-    @Transactional
-    public BranchDTO editBranch(Long branchId, BranchDTO branchDTO) {
-        Branch branch = findBranchById(branchId);
-        branch.setName(branchDTO.getName());
-        return Mapper.entityToDTO(branch);
-    }
-
     // HELPER METHODS
->>>>>>> b6960bb (new services for users coment now implements users, updatoes on branch and client services)
     private Map<Long, List<ReportCountDTO>> groupReportsById(List<ReportCountDTO> activeReports) {
         return activeReports.stream().collect(Collectors.groupingBy(ReportCountDTO::getId));
     }
