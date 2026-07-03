@@ -1,10 +1,7 @@
 package com.control_activos.sks.control_activos.mapper;
 
 import com.control_activos.sks.control_activos.enums.ReortStatusEnum;
-import com.control_activos.sks.control_activos.models.dto.reportDTO.ReportDetailDTO;
-import com.control_activos.sks.control_activos.models.dto.reportDTO.ReportHistoryDTO;
-import com.control_activos.sks.control_activos.models.dto.reportDTO.ReportDashboardDTO;
-import com.control_activos.sks.control_activos.models.dto.reportDTO.ReportTableDTO;
+import com.control_activos.sks.control_activos.models.dto.reportDTO.*;
 import com.control_activos.sks.control_activos.models.entity.Report;
 import com.control_activos.sks.control_activos.services.ReportService;
 
@@ -66,6 +63,17 @@ public class ReportMapper {
                 Optional.ofNullable(report.getClosedAt()).map(Object::toString).orElse("N/A"),
                 Optional.ofNullable(report.getDueDate()).map(Object::toString).orElse("N/A"),
                 report.getPriority().toString()
+        );
+    }
+
+    public static ReportResponseDTO toReportResponseDTO(Report report) {
+        return new ReportResponseDTO(
+                report.getId(),
+                report.getTitle(),
+                report.getPriority().toString(),
+                report.getReportDetails(),
+                ReortStatusEnum.resolve(report.getStatus(), report.getDueDate()),
+                Optional.ofNullable(report.getDueDate()).map(Object::toString).orElse("N/A")
         );
     }
 }

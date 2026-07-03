@@ -3,6 +3,7 @@ package com.control_activos.sks.control_activos.mapper;
 import com.control_activos.sks.control_activos.enums.ReportPriorityEnum;
 import com.control_activos.sks.control_activos.models.dto.*;
 import com.control_activos.sks.control_activos.models.dto.commentDTO.CommentDTO;
+import com.control_activos.sks.control_activos.models.dto.reportDTO.ReportDTO;
 import com.control_activos.sks.control_activos.models.entity.*;
 import org.springframework.stereotype.Service;
 
@@ -14,15 +15,15 @@ import java.util.Optional;
 public class Mapper {
 
     // #TODO: Implments Mapper Class for each entity to DTO conversion, and vice versa if needed.
-
-    public static ClientDTO entityToDTO (Client client) {
+    /*
+    public static  entityToDTO (Client client) {
         return new ClientDTO(
                 client.getId(),
                 client.getName(),
                 Optional.ofNullable(client.getBranches()).orElse(List.of())
                         .stream().map(Mapper::entityToDTO).toList()
         );
-    }
+    }*/
 
     public static CommentDTO entityToDTO (Comment comment) {
         return new  CommentDTO(
