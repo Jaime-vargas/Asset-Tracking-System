@@ -1,4 +1,4 @@
-package com.control_activos.sks.control_activos.models.dto.hardwareDTO;
+package com.control_activos.sks.control_activos.models.dto.cameraDTO;
 
 import lombok.Getter;
 import lombok.Setter;
