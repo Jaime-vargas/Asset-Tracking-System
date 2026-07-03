@@ -21,8 +21,8 @@ public class CameraDetailDTO extends HardwareDetailDTO {
     private PhotoDTO viewToCameraPhoto;
 
 
-    public CameraDetailDTO(Long id, String type, String brand, String model, String serialNumber, String location, String name, String lastMaintenanceDate
-    , String cameraId, String macAddress, String ipAddress, String idf, String username, String password, PhotoDTO viewFromCameraPhoto, PhotoDTO viewToCameraPhoto) {
+    public CameraDetailDTO(Long id, String type, String brand, String model, String serialNumber, String location, String name, String lastMaintenanceDate,
+                           String cameraId, String macAddress, String ipAddress, String idf, String username, String password, PhotoDTO viewFromCameraPhoto, PhotoDTO viewToCameraPhoto) {
         super(id, type, brand, model, serialNumber, location, name, lastMaintenanceDate);
         this.cameraId = cameraId;
         this.macAddress = macAddress;

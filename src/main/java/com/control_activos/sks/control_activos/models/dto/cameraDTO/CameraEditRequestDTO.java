@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CameraRequestDTO {
+public class CameraEditRequestDTO {
     String name;
     String brand;
     String serialNumber;

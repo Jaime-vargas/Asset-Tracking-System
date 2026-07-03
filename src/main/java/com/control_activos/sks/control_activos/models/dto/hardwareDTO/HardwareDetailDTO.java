@@ -19,6 +19,8 @@ public abstract class HardwareDetailDTO {
     private String serialNumber;
     private String location;
     private String lastMaintenanceDate;
+    private long activeReportsCount;
+    private long overdueReportsCount;
     private List<ReportHistoryDTO> recentActiveReports;
 
     public HardwareDetailDTO(long id, String type, String brand, String model, String serialNumber, String location, String name, String lastMaintenanceDate) {
@@ -29,7 +31,6 @@ public abstract class HardwareDetailDTO {
         this.model = model;
         this.serialNumber = serialNumber;
         this.location = location;
-
         this.lastMaintenanceDate = lastMaintenanceDate;
     }
 }
