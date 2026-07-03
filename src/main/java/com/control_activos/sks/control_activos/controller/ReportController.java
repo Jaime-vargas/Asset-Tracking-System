@@ -1,10 +1,8 @@
 package com.control_activos.sks.control_activos.controller;
 
-import com.control_activos.sks.control_activos.models.dto.ReportDTO;
+import com.control_activos.sks.control_activos.models.dto.reportDTO.*;
 import com.control_activos.sks.control_activos.models.dto.commentDTO.CommentDTO;
 import com.control_activos.sks.control_activos.models.dto.commentDTO.CommentRequestDTO;
-import com.control_activos.sks.control_activos.models.dto.reportDTO.ReportDetailDTO;
-import com.control_activos.sks.control_activos.models.dto.reportDTO.ReportTableDTO;
 import com.control_activos.sks.control_activos.services.CommentService;
 import com.control_activos.sks.control_activos.services.FilesService;
 import com.control_activos.sks.control_activos.services.ReportService;
@@ -47,6 +45,12 @@ public class ReportController {
         return  ResponseEntity.status(HttpStatus.CREATED).body(commentDTO);
     }
 
+    @PutMapping("/{reportId}")
+    public ResponseEntity<ReportResponseDTO> updateReport(@PathVariable long reportId, @RequestBody ReportRequestDTO reportRequestDTO) {
+        ReportResponseDTO updatedReport = reportService.updateReport(reportId, reportRequestDTO);
+        return ResponseEntity.ok().body(updatedReport);
+    }
+
     @PutMapping("/{reportId}/close")
     public ResponseEntity<?> closeReport (@PathVariable long reportId) {
         reportService.closeReport(reportId);
@@ -59,14 +63,4 @@ public class ReportController {
         filesService.uploadPhotoToReport(reportId, file);
         return ResponseEntity.noContent().build();
     }
-
-
-    // #TODO check endpoints below this comment
-    @PostMapping
-    public ResponseEntity<ReportDTO> createReport(@PathVariable long hardwareId, @RequestBody ReportDTO reportDTO) {
-        reportDTO = reportService.saveReport(hardwareId, reportDTO);
-        return ResponseEntity.ok().body(reportDTO);
-    }
-
-
 }
