@@ -1,38 +1,38 @@
 package com.control_activos.sks.control_activos.services;
 
+import com.control_activos.sks.control_activos.enums.AuthenticationExceptionEnum;
 import com.control_activos.sks.control_activos.enums.OperationNotAllowedExceptionEnum;
-import com.control_activos.sks.control_activos.enums.ReortStatusEnum;
 import com.control_activos.sks.control_activos.enums.ReportPriorityEnum;
 import com.control_activos.sks.control_activos.enums.ResourceNotFoundExceptionEnum;
+import com.control_activos.sks.control_activos.exception.AuthenticationException;
 import com.control_activos.sks.control_activos.exception.OperationNotAllowedException;
 import com.control_activos.sks.control_activos.exception.ResourceNotFoundException;
-import com.control_activos.sks.control_activos.mapper.Mapper;
 import com.control_activos.sks.control_activos.mapper.ReportMapper;
-import com.control_activos.sks.control_activos.models.dto.ReportDTO;
-import com.control_activos.sks.control_activos.models.dto.reportDTO.ReportDetailDTO;
-import com.control_activos.sks.control_activos.models.dto.reportDTO.ReportTableDTO;
+import com.control_activos.sks.control_activos.models.dto.reportDTO.*;
 import com.control_activos.sks.control_activos.models.entity.Hardware;
 import com.control_activos.sks.control_activos.models.entity.Report;
 import com.control_activos.sks.control_activos.models.entity.UserEntity;
-import com.control_activos.sks.control_activos.repository.HardwareRepository;
 import com.control_activos.sks.control_activos.repository.ReportRepository;
-import com.control_activos.sks.control_activos.repository.UserEntityRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.servlet.filter.OrderedFormContentFilter;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ReportService {
 
-    private final HardwareRepository hardwareRepository;
     private final ReportRepository reportRepository;
-    public ReportService(HardwareRepository hardwareRepository, ReportRepository reportRepository) {
-        this.hardwareRepository = hardwareRepository;
-        this.reportRepository = reportRepository;
-    }
+    private final HardwareService hardwareService;
+    private final UserEntityService userEntityService;
+    private final OrderedFormContentFilter orderedFormContentFilter;
 
     public List<ReportTableDTO> getAllReports(){
         List<Report> reports = reportRepository.findAllByOrderByStatusDescDueDateAsc();
@@ -52,25 +52,74 @@ public class ReportService {
         reportRepository.save(report);
     }
 
-    // #TODO set real user in report
-    // #TODO Check all methods under this comment and refactor to use real user instead of hardcoding userId in service layer
-    @Autowired
-    private UserEntityRepository userEntityRepository;
+    @Transactional
+    public ReportHistoryDTO saveReport(Long hardwareId, ReportRequestDTO reportRequestDTO) {
+        Hardware hardware = hardwareService.findHardwareById(hardwareId);
+
+        ReportPriorityEnum reportPriority = validatePriorityEnum(reportRequestDTO.getPriorityEnum());
+        OffsetDateTime dueDate = validateDueDate(reportRequestDTO.getDueDate(), OffsetDateTime.now());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        UserEntity user = userEntityService.findByUserEntityByUsername(username);
+
+        Report report = new Report();
+        report.setTitle(reportRequestDTO.getTitle());
+        report.setPriority(reportPriority);
+        report.setReportDetails(reportRequestDTO.getReportDetails());
+        report.setDueDate(dueDate);
+        report.setHardware(hardware);
+        report.setReportedBy(user);
+        report.setCreatedAt(OffsetDateTime.now());
+        report.setUpdatedAt(OffsetDateTime.now());
+        report.setStatus(true);
+
+        report = reportRepository.save(report);
+        return ReportMapper.toReportHistoryDTO(report);
+    }
 
     @Transactional
-    public ReportDTO saveReport(Long hardwareId, ReportDTO reportDTO) {
-        UserEntity userEntity = userEntityRepository.findById(1L).get();
-        Hardware hardware = hardwareRepository.findById(hardwareId).get(); // #TODO validate hardware exist with optional
-        Report report = new Report();
-        report.setTitle(reportDTO.getTitle());
-        report.setStatus(true);
-        report.setHardware(hardware);
-        report.setCreatedAt(OffsetDateTime.now()); // updated dado of camera
-        report.setReportedBy(userEntity); // #TODO set real user in report
-        report.setDueDate(OffsetDateTime.parse(reportDTO.getDueDate())); // #TODO Implement due date logic
-        report.setPriority(ReportPriorityEnum.valueOf(reportDTO.getPriority()));
-        report = reportRepository.save(report);
-        return Mapper.entityToDTO(report);
+    public ReportResponseDTO updateReport(Long reportId, ReportRequestDTO reportRequestDTO) {
+        Report report = findReportById(reportId);
+        ReportPriorityEnum reportPriority = validatePriorityEnum(reportRequestDTO.getPriorityEnum());
+        OffsetDateTime dueDate = validateDueDate(reportRequestDTO.getDueDate(), report.getCreatedAt());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null){
+            throw new AuthenticationException(HttpStatus.UNAUTHORIZED,
+                    AuthenticationExceptionEnum.TOKEN_EXPIRED.getMessage());
+        }
+        String username = authentication.getName();
+        UserEntity user = userEntityService.findByUserEntityByUsername(username);
+        if(!user.getUsername().equals(username)){
+            throw new AuthenticationException(HttpStatus.FORBIDDEN,
+                    AuthenticationExceptionEnum.FORBIDDEN_ACCESS.getMessage());
+        }
+
+        report.setTitle(reportRequestDTO.getTitle());
+        report.setPriority(reportPriority);
+        report.setReportDetails(reportRequestDTO.getReportDetails());
+        report.setDueDate(dueDate);
+        report.setUpdatedAt(OffsetDateTime.now());
+
+        return ReportMapper.toReportResponseDTO(report);
+    }
+
+
+    private OffsetDateTime validateDueDate(String dueDate, OffsetDateTime creationDate) {
+        OffsetDateTime validatedDueDate;
+        try {
+            validatedDueDate = OffsetDateTime.parse(dueDate);
+            if(validatedDueDate.isAfter(creationDate)) {
+                return validatedDueDate;
+            } else {
+                throw new OperationNotAllowedException(
+                        OperationNotAllowedExceptionEnum.INVALID_DUE_DATE.getMessage());
+            }
+        } catch (DateTimeParseException e) {
+            throw new OperationNotAllowedException(
+                    OperationNotAllowedExceptionEnum.INVALID_DUE_DATE_FORMAT.getMessage());
+        }
     }
 
     public Report findReportById(Long reportId) {
@@ -83,6 +132,15 @@ public class ReportService {
         if (!report.getStatus()) {
             throw new OperationNotAllowedException(
                     OperationNotAllowedExceptionEnum.REPORT_ALREADY_CLOSED.getMessage());
+        }
+    }
+
+    public ReportPriorityEnum validatePriorityEnum(String priority) {
+        try{
+            return ReportPriorityEnum.valueOf(priority);
+        } catch (IllegalArgumentException e) {
+            throw new OperationNotAllowedException(
+                    OperationNotAllowedExceptionEnum.INVALID_REPORT_PRIORITY.getMessage());
         }
     }
 }
