@@ -23,14 +23,15 @@ public class JwtUtil {
         this.SECRET_KEY = Keys.hmacShaKeyFor(
                 "0cRJNYRU8UxYn5eZ0D6SPwHmRHsnpiIB".getBytes(StandardCharsets.UTF_8)
         );
-        this.TIME_EXPIRATION = TimeUnit.MINUTES.toMillis(60);
+        this.TIME_EXPIRATION = TimeUnit.MINUTES.toMillis(120);
     }
 
     // Generate token for user authentication
-    public String generateToken(String username, String role) {
+    public String generateToken(String username, String fullName, String role) {
         long now = System.currentTimeMillis();
         return Jwts.builder()
                 .subject(username)
+                .claim("fullName", fullName)
                 .claim("role", role)
                 .issuedAt(new java.util.Date(now))
                 .expiration(new java.util.Date(now + TIME_EXPIRATION))
