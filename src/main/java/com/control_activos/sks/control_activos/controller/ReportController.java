@@ -63,4 +63,10 @@ public class ReportController {
         filesService.uploadPhotoToReport(reportId, file);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/{reportId}/photos/{photoId}")
+    public ResponseEntity<?> deletePhoto(@PathVariable Long reportId, @PathVariable Long photoId) {
+        filesService.deletePhotoFromReport(reportId, photoId);
+        return ResponseEntity.noContent().build();
+    }
 }

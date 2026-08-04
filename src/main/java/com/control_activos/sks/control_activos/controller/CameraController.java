@@ -37,8 +37,7 @@ public class CameraController {
 
     @PostMapping("/photos")
     public ResponseEntity<HardwareDetailDTO> addPhoto(@PathVariable Long cameraId, @RequestPart("file") MultipartFile file,
-                                      @RequestParam CameraPhotoUploads photoType,
-                                      @RequestParam(defaultValue = "false") Boolean replaceExisting) {
+                                      @RequestParam CameraPhotoUploads photoType, @RequestParam(defaultValue = "false") Boolean replaceExisting) {
         HardwareDetailDTO hardwareDetailDTO = filesService.uploadCameraPhoto(cameraId, file, photoType, replaceExisting);
         return ResponseEntity.ok().body(hardwareDetailDTO);
     }

@@ -1,11 +1,7 @@
 package com.control_activos.sks.control_activos.controller;
 
-import com.control_activos.sks.control_activos.models.dto.UserEntityDTO;
-import com.control_activos.sks.control_activos.models.dto.UserEntityPasswordRequestDTO;
-import com.control_activos.sks.control_activos.models.dto.UserEntityResponseDTO;
-import com.control_activos.sks.control_activos.models.dto.UserEntityRoleDTO;
+import com.control_activos.sks.control_activos.models.dto.user.*;
 import com.control_activos.sks.control_activos.services.UserEntityService;
-import lombok.Getter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,14 +35,32 @@ public class UserEntityController {
     }
 
     @PutMapping("/{userEntityId}")
-    public ResponseEntity<UserEntityResponseDTO> updateUserEntity(@PathVariable Long userEntityId, @RequestBody UserEntityResponseDTO userEntityResponseDTO){
-        UserEntityResponseDTO updatedUserEntityDTO = userEntityService.updateUserEntity(userEntityId, userEntityResponseDTO);
+    public ResponseEntity<UserEntityResponseDTO> updateUserEntity(@PathVariable Long userEntityId, @RequestBody UserEntityEditRequestDTO userEntityEditRequestDTO){
+        UserEntityResponseDTO updatedUserEntityDTO = userEntityService.updateUserEntity(userEntityId, userEntityEditRequestDTO);
         return ResponseEntity.ok().body(updatedUserEntityDTO);
     }
 
-    @PutMapping("/{userEntityId}/password")
-    public ResponseEntity<?> updateUserEntityPassword(@PathVariable Long userEntityId, @RequestBody UserEntityPasswordRequestDTO userEntityPasswordRequestDTO){
-        userEntityService.updateUserEntityPassword(userEntityId, userEntityPasswordRequestDTO);
+    @PutMapping("/me/password")
+    public ResponseEntity<?> updateUserEntityPassword(@RequestBody UserEntityPasswordRequestDTO userEntityPasswordRequestDTO){
+        userEntityService.updateUserEntityPassword(userEntityPasswordRequestDTO);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{userEntityId}/reset-password")
+    public  ResponseEntity<?> resetUserEntityPassword(@PathVariable Long userEntityId, @RequestBody UserEntityResetPasswordDTO userEntityResetPasswordDTO){
+        userEntityService.resetUserEntityPassword(userEntityId, userEntityResetPasswordDTO);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{userEntityId}/disable-user")
+    public ResponseEntity<UserEntityResponseDTO> disableUserEntity (@PathVariable Long userEntityId){
+        UserEntityResponseDTO disabledUserEntityResponseDTO = userEntityService.disableUserEntity(userEntityId);
+        return ResponseEntity.ok().body(disabledUserEntityResponseDTO);
+    }
+
+    @PutMapping("/{userEntityId}/enable-user")
+    public ResponseEntity<UserEntityResponseDTO> enableUserEntity (@PathVariable Long userEntityId){
+        UserEntityResponseDTO enabledUserEntityDTO = userEntityService.enableUserEntity(userEntityId);
+        return ResponseEntity.ok().body(enabledUserEntityDTO);
     }
 }
