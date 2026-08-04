@@ -3,7 +3,6 @@ package com.control_activos.sks.control_activos.mapper;
 import com.control_activos.sks.control_activos.enums.ReortStatusEnum;
 import com.control_activos.sks.control_activos.models.dto.reportDTO.*;
 import com.control_activos.sks.control_activos.models.entity.Report;
-import com.control_activos.sks.control_activos.services.ReportService;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,7 +52,7 @@ public class ReportMapper {
                 report.getId(),
                 report.getTitle(),
                 report.getReportDetails(),
-                report.getPhotos().stream().map(PhotoMapper::toPhotoDTO).toList(),
+                report.getFileEntities().stream().map(PhotoMapper::toPhotoDTO).toList(),
                 Optional.ofNullable(report.getComments()).orElse(List.of()).stream().map(Mapper::entityToDTO).toList(),
                 ReortStatusEnum.resolve(report.getStatus(), report.getDueDate()),
                 report.getHardware().getName(),

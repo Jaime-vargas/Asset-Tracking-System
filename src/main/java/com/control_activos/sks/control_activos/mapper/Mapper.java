@@ -4,6 +4,7 @@ import com.control_activos.sks.control_activos.enums.ReportPriorityEnum;
 import com.control_activos.sks.control_activos.models.dto.*;
 import com.control_activos.sks.control_activos.models.dto.commentDTO.CommentDTO;
 import com.control_activos.sks.control_activos.models.dto.reportDTO.ReportDTO;
+import com.control_activos.sks.control_activos.models.dto.user.UserEntityResponseDTO;
 import com.control_activos.sks.control_activos.models.entity.*;
 import org.springframework.stereotype.Service;
 
@@ -34,11 +35,11 @@ public class Mapper {
         );
     }
 
-    public static PhotoDTO entityToDTO (Photo photo) {
-        PhotoDTO dto = new PhotoDTO();
-        dto.setId(photo.getId());
-        dto.setFilename(photo.getFilename());
-        dto.setContentType(photo.getContentType());
+    public static FileEntityDTO entityToDTO (FileEntity fileEntity) {
+        FileEntityDTO dto = new FileEntityDTO();
+        dto.setId(fileEntity.getId());
+        dto.setFilename(fileEntity.getFilename());
+        dto.setContentType(fileEntity.getContentType());
         return dto;
     }
 
@@ -46,7 +47,7 @@ public class Mapper {
         return new ReportDTO(
                 report.getId(),
                 report.getTitle(),
-                Optional.ofNullable(report.getPhotos()).orElse(List.of()).stream().map(Mapper::entityToDTO).toList(),
+                Optional.ofNullable(report.getFileEntities()).orElse(List.of()).stream().map(Mapper::entityToDTO).toList(),
                 Optional.ofNullable(report.getComments()).orElse(List.of()).stream().map(Mapper::entityToDTO).toList(),
                 report.getStatus(),
                 report.getHardware().getName(),
@@ -71,7 +72,8 @@ public class Mapper {
                 user.getId(),
                 user.getUsername(),
                 user.getFullName(),
-                user.getRole().getValue()
+                user.getRole().getValue(),
+                user.isActive()
         );
     }
 }

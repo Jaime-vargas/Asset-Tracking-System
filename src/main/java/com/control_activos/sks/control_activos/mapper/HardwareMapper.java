@@ -33,8 +33,8 @@ public class HardwareMapper {
                     camera.getIdf(),
                     camera.getUsername(),
                     camera.getPassword(),
-                    camera.getViewFromCameraPhoto() != null ? PhotoMapper.toPhotoDTO(camera.getViewFromCameraPhoto()) : null,
-                    camera.getViewToCameraPhoto() != null ? PhotoMapper.toPhotoDTO(camera.getViewToCameraPhoto()) : null
+                    camera.getViewFromCameraFileEntity() != null ? PhotoMapper.toPhotoDTO(camera.getViewFromCameraFileEntity()) : null,
+                    camera.getViewToCameraFileEntity() != null ? PhotoMapper.toPhotoDTO(camera.getViewToCameraFileEntity()) : null
             );
         }
         else return null; // TODO: Add other hardware types and throw exception if type is not supported
