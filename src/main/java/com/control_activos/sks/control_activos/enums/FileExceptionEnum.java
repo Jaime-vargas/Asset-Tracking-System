@@ -3,7 +3,8 @@ package com.control_activos.sks.control_activos.enums;
 import lombok.Getter;
 
 @Getter
-public enum FileEnum {
+public enum FileExceptionEnum {
+    INVALID_FILE("Error reading file."),
     DIRECTORY_CREATION_ERROR("Directory Creation Error, Could not create directory for saving attachment files: "),
     SAVE_ERROR("FileSaveError: "),
     DELETE_ERROR("FileDeleteError, Could not delete the file at the specified path."),
@@ -13,7 +14,7 @@ public enum FileEnum {
     ALREADY_EXISTS("FileAlreadyExists:, A file already exists.");
 
     private final String message;
-    FileEnum(String message) {
+    FileExceptionEnum(String message) {
         this.message = message;
     }
 
