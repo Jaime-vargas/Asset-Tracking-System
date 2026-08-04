@@ -1,7 +1,10 @@
 package com.control_activos.sks.control_activos.exception;
 
-public class ImportServiceException extends RuntimeException {
-  public ImportServiceException(String message) {
-    super(message);
-  }
+import org.springframework.http.HttpStatus;
+
+public class ImportServiceException extends ApiException {
+
+    public  ImportServiceException(String message) {
+        super(message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

@@ -8,6 +8,7 @@ public enum ResourceFormatExceptionEnum {
     INVALID_FORMAT("Invalid format: "),
 
     // CAMERA
+    INVALID_CAMERA_ID("Invalid camera ID format"),
     INVALID_IP_ADDRESS("Invalid IP address format"),
     INVALID_MAC_ADDRESS("Invalid MAC address format"),
     INVALID_SERIAL_NUMBER("Invalid serial number format"),

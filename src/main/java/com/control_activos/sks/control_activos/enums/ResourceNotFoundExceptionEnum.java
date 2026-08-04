@@ -14,6 +14,7 @@ public enum ResourceNotFoundExceptionEnum {
     CLIENT_NOT_FOUND("Client not found with id: "),
     BRANCH_NOT_FOUND("Sucursal not found with id: "),
     CAMERA_NOT_FOUND("Camera not found with id: "),
+    CATEGORY_NOT_FOUND("File category not found with id: "),
     HARDWARE_NOT_FOUND("Hardware not found with id: "),
     REPORT_NOT_FOUND("Report not found with id: "),
     COMMENT_NOT_FOUND("Comment not found with id: "),
@@ -25,9 +26,7 @@ public enum ResourceNotFoundExceptionEnum {
     ResourceNotFoundExceptionEnum(String message) {
         this.message = message;
     }
-
     public String build(Object value) {
         return message + value;
     }
-
 }
