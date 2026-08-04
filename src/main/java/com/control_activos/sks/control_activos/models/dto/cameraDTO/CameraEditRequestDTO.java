@@ -1,10 +1,12 @@
 package com.control_activos.sks.control_activos.models.dto.cameraDTO;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class CameraEditRequestDTO {
     String name;
     String brand;

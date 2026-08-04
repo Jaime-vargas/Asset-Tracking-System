@@ -1,6 +1,6 @@
 package com.control_activos.sks.control_activos.models.dto.clientDTO;
 
-import com.control_activos.sks.control_activos.models.entity.Photo;
+import com.control_activos.sks.control_activos.models.entity.FileEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -9,5 +9,5 @@ import lombok.Getter;
 public class ClientDTO {
     private Long id;
     private String name;
-    private Photo photo;
+    private FileEntity photo;
 }

@@ -1,10 +1,8 @@
 package com.control_activos.sks.control_activos.models.dto.hardwareDTO;
 
 
-import com.control_activos.sks.control_activos.models.dto.PhotoDTO;
-import lombok.AllArgsConstructor;
+import com.control_activos.sks.control_activos.models.dto.FileEntityDTO;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
@@ -17,12 +15,12 @@ public class CameraDetailDTO extends HardwareDetailDTO {
     private String idf;
     private String username;
     private String password;
-    private PhotoDTO viewFromCameraPhoto;
-    private PhotoDTO viewToCameraPhoto;
+    private FileEntityDTO viewFromCameraPhoto;
+    private FileEntityDTO viewToCameraPhoto;
 
 
     public CameraDetailDTO(Long id, String type, String brand, String model, String serialNumber, String location, String name, String lastMaintenanceDate,
-                           String cameraId, String macAddress, String ipAddress, String idf, String username, String password, PhotoDTO viewFromCameraPhoto, PhotoDTO viewToCameraPhoto) {
+                           String cameraId, String macAddress, String ipAddress, String idf, String username, String password, FileEntityDTO viewFromCameraPhoto, FileEntityDTO viewToCameraPhoto) {
         super(id, type, brand, model, serialNumber, location, name, lastMaintenanceDate);
         this.cameraId = cameraId;
         this.macAddress = macAddress;

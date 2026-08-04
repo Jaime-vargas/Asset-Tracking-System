@@ -1,6 +1,6 @@
 package com.control_activos.sks.control_activos.models.dto.reportDTO;
 
-import com.control_activos.sks.control_activos.models.dto.PhotoDTO;
+import com.control_activos.sks.control_activos.models.dto.FileEntityDTO;
 import com.control_activos.sks.control_activos.models.dto.commentDTO.CommentDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import java.util.List;
 public class ReportDTO {
     private Long id;
     private String title;
-    private List<PhotoDTO> photos;
+    private List<FileEntityDTO> photos;
     private List<CommentDTO> comments;
     private Boolean active;
     private String hardware;

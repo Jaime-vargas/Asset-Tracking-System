@@ -1,4 +1,4 @@
-package com.control_activos.sks.control_activos.models.dto;
+package com.control_activos.sks.control_activos.models.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
