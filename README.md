@@ -225,6 +225,6 @@ src/main/resources/
 
 ## Autor
 
-**Jaime** — Proyecto incluido en mi portafolio profesional.
+**Jaime Vargas** — Proyecto incluido en mi portafolio profesional.
 
 Si deseas conocer decisiones de implementación o una demostración del proyecto, puedes contactarme a través de los enlaces de mi perfil profesional.
