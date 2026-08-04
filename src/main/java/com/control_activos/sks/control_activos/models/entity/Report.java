@@ -28,7 +28,7 @@ public class Report {
     private String reportDetails;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "report_id")
-    private List<Photo> photos;
+    private List<FileEntity> fileEntities;
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
     private List<Comment> comments;
     @Column(nullable = false)

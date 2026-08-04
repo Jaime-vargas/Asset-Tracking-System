@@ -22,9 +22,11 @@ public class UserEntity {
     private String username;
     @Column(nullable = false)
     private String password;
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String fullName;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRoleEnum role;
+    @Column(nullable = false)
+    private boolean active;
 }

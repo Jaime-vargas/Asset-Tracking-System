@@ -26,4 +26,7 @@ public class Branch {
     private Client client;
     @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL)
     private List<Hardware> hardware;
+    @OneToMany
+    @JoinColumn(name = "branch_id")
+    private List<FileEntity> files;
 }

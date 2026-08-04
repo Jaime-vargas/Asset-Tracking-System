@@ -14,15 +14,17 @@ import lombok.Setter;
 @Entity
 public class Camera extends Hardware {
     private String cameraId;
+    @Column(nullable = false)
     private String macAddress;
+    @Column(nullable = false)
     private String ipAddress;
     private String idf;
     private String username;
     private String password;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "view_from_photo_id")
-    private Photo viewFromCameraPhoto;
+    private FileEntity viewFromCameraFileEntity;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "view_to_photo_id")
-    private Photo viewToCameraPhoto;
+    private FileEntity viewToCameraFileEntity;
 }

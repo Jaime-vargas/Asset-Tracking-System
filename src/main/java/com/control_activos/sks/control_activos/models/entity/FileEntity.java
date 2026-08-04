@@ -2,8 +2,6 @@ package com.control_activos.sks.control_activos.models.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jdk.jfr.Category;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +13,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 
 @Entity
-public class Photo {
+public class FileEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,15 +30,17 @@ public class Photo {
     private OffsetDateTime uploadedAt;
     @ManyToOne
     @JoinColumn(name = "category_id")
-    private Category category;
+    private FileCategory category;
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 
-
-    public Photo (String filename, String contentType, Long size, String filePath, OffsetDateTime uploadedAt) {
+    public FileEntity(String filename, String contentType, Long size, String filePath, OffsetDateTime uploadedAt) {
         this.filename = filename;
         this.contentType = contentType;
         this.size = size;
         this.filePath = filePath;
         this.uploadedAt = uploadedAt;
     }
-
 }

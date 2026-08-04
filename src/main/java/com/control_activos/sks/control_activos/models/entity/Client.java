@@ -26,5 +26,5 @@ public class Client {
     private List<Branch> branches = new ArrayList<>();
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "photo_id")
-    private Photo photo;
+    private FileEntity photo;
 }
