@@ -13,6 +13,7 @@ import com.control_activos.sks.control_activos.models.entity.Hardware;
 import com.control_activos.sks.control_activos.models.entity.Report;
 import com.control_activos.sks.control_activos.repository.HardwareRepository;
 import com.control_activos.sks.control_activos.repository.ReportRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -21,19 +22,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class HardwareService {
 
-    private final BranchService branchService;
-    private final ClientService clientService;
     private final HardwareRepository hardwareRepository;
     private final ReportRepository reportRepository;
-
-    public HardwareService(BranchService branchService, ClientService clientService, HardwareRepository hardwareRepository, ReportRepository reportRepository) {
-        this.branchService = branchService;
-        this.clientService = clientService;
-        this.hardwareRepository = hardwareRepository;
-        this.reportRepository = reportRepository;
-    }
 
     // GET REPORTS BY HARDWARE ID
     public List<ReportTableDTO> getReportsByHardwareId(Long hardwareID) {

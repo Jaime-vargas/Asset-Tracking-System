@@ -43,9 +43,7 @@ public class CommentService {
         comment.setCreatedAt(OffsetDateTime.now());
 
         // User Implementation Testing
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        UserEntity user = userEntityService.findByUserEntityByUsername(username);
+        UserEntity user = userEntityService.authenticateCurrentUser();
         comment.setUser(user);
 
         comment.setReport(report);

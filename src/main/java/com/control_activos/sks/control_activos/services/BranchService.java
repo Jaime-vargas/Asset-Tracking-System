@@ -1,28 +1,24 @@
 package com.control_activos.sks.control_activos.services;
 
-import com.control_activos.sks.control_activos.enums.OperationNotAllowedExceptionEnum;
 import com.control_activos.sks.control_activos.enums.ResourceNotFoundExceptionEnum;
-import com.control_activos.sks.control_activos.exception.OperationNotAllowedException;
 import com.control_activos.sks.control_activos.exception.ResourceNotFoundException;
-import com.control_activos.sks.control_activos.mapper.BranchMapper;
+import com.control_activos.sks.control_activos.mapper.FileMapper;
 import com.control_activos.sks.control_activos.mapper.HardwareMapper;
 import com.control_activos.sks.control_activos.mapper.Mapper;
+import com.control_activos.sks.control_activos.models.dto.FileRequestDTO;
 import com.control_activos.sks.control_activos.models.dto.BranchDTO;
-import com.control_activos.sks.control_activos.models.dto.branchDTO.BranchTableDTO;
+import com.control_activos.sks.control_activos.models.dto.FileEntityDTO;
 import com.control_activos.sks.control_activos.models.dto.hardwareDTO.HardwareTableDTO;
 import com.control_activos.sks.control_activos.models.dto.reportDTO.ReportCountDTO;
-import com.control_activos.sks.control_activos.models.entity.Client;
-import com.control_activos.sks.control_activos.models.entity.Branch;
-import com.control_activos.sks.control_activos.models.entity.Hardware;
-import com.control_activos.sks.control_activos.models.entity.Report;
-import com.control_activos.sks.control_activos.repository.BranchRepository;
-import com.control_activos.sks.control_activos.repository.HardwareRepository;
-import com.control_activos.sks.control_activos.repository.ReportRepository;
+import com.control_activos.sks.control_activos.models.entity.*;
+import com.control_activos.sks.control_activos.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,8 +27,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BranchService {
 
-    private final ClientService clientService;
+    private final FileCategoryService fileCategoryService;
     private final BranchRepository branchRepository;
+    private final FilesService filesService;
     private final HardwareRepository hardwareRepository;
     private final ReportRepository reportRepository;
 
@@ -52,18 +49,30 @@ public class BranchService {
         List<ReportCountDTO> activeReports = reportRepository.findActiveReportsByBranchId(branchId);
         return mergeHardwareAndReportsToDTO(hardwareList, activeReports);
     }
-
-
-    /** Helper methods */
-    @Transactional
-    public BranchDTO saveBranch(Long clientId, BranchDTO branchDTO) {
-        Client client = clientService.findClientById(clientId);
-        Branch branch = new Branch();
-        branch.setClient(client);
-        branch.setName(branchDTO.getName());
-        branch = branchRepository.save(branch);
-        return Mapper.entityToDTO(branch);
+    /***********************************************************/
+    /** File related services */
+    public List<FileEntityDTO> getFilesByBranchId(Long branchId){
+        Branch branch = findBranchById(branchId);
+        List<FileEntity> files = branch.getFiles();
+        return files.stream().map(FileMapper::toFileEntityDto).collect(Collectors.toList());
     }
+
+    @Transactional
+    public FileEntityDTO uploadFile(Long branchId, MultipartFile file, FileRequestDTO fileRequestDTO) {
+        Branch branch = findBranchById(branchId);
+        FileCategory category = fileCategoryService.findById(fileRequestDTO.getCategoryId());
+        filesService.validateNotEmpty(file);
+        Path projectPath = filesService.getPathOfProjectFiles(branch);
+        filesService.createDirectoriesIfNotExist(projectPath);
+        Path storePath = filesService.getStorePath(projectPath, file.getOriginalFilename());
+        FileEntity savedFile = filesService.saveFile(file, storePath, category);
+        branch.getFiles().add(savedFile);
+
+        return FileMapper.toFileEntityDto(savedFile);
+    }
+
+    /***********************************************************/
+    /** Helper methods */
 
     // HELPER METHODS
     private Map<Long, List<ReportCountDTO>> groupReportsById(List<ReportCountDTO> activeReports) {
@@ -80,9 +89,9 @@ public class BranchService {
     }
 
     /** Validations */
-    public Branch findBranchById(Long sucursalId) {
-        return branchRepository.findById(sucursalId)
+    public Branch findBranchById(Long projectId) {
+        return branchRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        ResourceNotFoundExceptionEnum.BRANCH_NOT_FOUND.build(sucursalId)));
+                        ResourceNotFoundExceptionEnum.BRANCH_NOT_FOUND.build(projectId)));
     }
 }

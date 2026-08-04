@@ -1,18 +1,20 @@
 package com.control_activos.sks.control_activos.services;
 
 import com.control_activos.sks.control_activos.enums.CameraPhotoUploads;
-import com.control_activos.sks.control_activos.enums.FileEnum;
+import com.control_activos.sks.control_activos.enums.FileExceptionEnum;
+import com.control_activos.sks.control_activos.enums.ResourceNotFoundExceptionEnum;
 import com.control_activos.sks.control_activos.exception.FileException;
+import com.control_activos.sks.control_activos.exception.ResourceNotFoundException;
 import com.control_activos.sks.control_activos.mapper.ClientMapper;
 import com.control_activos.sks.control_activos.models.dto.clientDTO.ClientDTO;
 import com.control_activos.sks.control_activos.models.dto.hardwareDTO.HardwareDetailDTO;
-import com.control_activos.sks.control_activos.models.entity.Camera;
-import com.control_activos.sks.control_activos.models.entity.Client;
-import com.control_activos.sks.control_activos.models.entity.Photo;
-import com.control_activos.sks.control_activos.models.entity.Report;
-import com.control_activos.sks.control_activos.repository.PhotoRepository;
+import com.control_activos.sks.control_activos.models.entity.*;
+import com.control_activos.sks.control_activos.repository.FileRepository;
 
+import com.control_activos.sks.control_activos.repository.ReportRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,42 +25,37 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class FilesService {
 
     private final CameraService cameraService;
     private final ClientService clientService;
-    private final PhotoRepository photoRepository;
-    private final ReportService reportService;
+    private final FileRepository fileRepository;
+    private final ReportRepository reportRepository;
     private final HardwareService hardwareService;
-
-
-    public FilesService(CameraService cameraService, ClientService clientService, PhotoRepository photoRepository, ReportService reportService, HardwareService hardwareService) {
-        this.cameraService = cameraService;
-        this.clientService = clientService;
-        this.photoRepository = photoRepository;
-        this.reportService = reportService;
-        this.hardwareService = hardwareService;
-    }
+    private final UserEntityService userEntityService;
+    @Value("${app.storage.base-path}")
+    private String storagePath;
 
     @Transactional
     public ClientDTO UploadClientPhoto(Long clientId, MultipartFile file, Boolean replaceExisting) {
         Client client = clientService.findClientById(clientId);
         validateIsImage(file);
 
-        Photo currentPhoto = client.getPhoto();
-        if (currentPhoto != null && !replaceExisting) {
+        FileEntity currentFileEntity = client.getPhoto();
+        if (currentFileEntity != null && !replaceExisting) {
             throw new FileException(
-                    FileEnum.ALREADY_EXISTS.getMessage(" " + file.getOriginalFilename() + " for client with ID: " + client.getId())
+                    FileExceptionEnum.ALREADY_EXISTS.getMessage(" " + file.getOriginalFilename() + " for client with ID: " + client.getId())
             );
         }
-
         Path path = getPathOfClient(clientId);
         createDirectoriesIfNotExist(path);
         Path storePath = getStorePath(path, file.getOriginalFilename());
 
-        if(replaceExisting && currentPhoto != null && !Files.exists(storePath)) {
-            deleteFile(Path.of(currentPhoto.getFilePath()));
-            photoRepository.delete(currentPhoto);
+        if(replaceExisting && currentFileEntity != null && !Files.exists(storePath)) {
+            deleteFile(Path.of(currentFileEntity.getFilePath()));
+            client.setPhoto(null);
+            fileRepository.delete(currentFileEntity);
         }
 
         client.setPhoto(saveFileToPath(file, storePath));
@@ -72,13 +69,13 @@ public class FilesService {
 
         validateIsImage(file);
 
-        Photo currentPhoto = switch (photoType) {
-            case VIEW_FROM_CAMERA -> camera.getViewFromCameraPhoto();
-            case VIEW_TO_CAMERA -> camera.getViewToCameraPhoto();
+        FileEntity currentFileEntity = switch (photoType) {
+            case VIEW_FROM_CAMERA -> camera.getViewFromCameraFileEntity();
+            case VIEW_TO_CAMERA -> camera.getViewToCameraFileEntity();
         };
-        if (currentPhoto != null && !replaceExisting) {
+        if (currentFileEntity != null && !replaceExisting) {
             throw new FileException(
-                    FileEnum.ALREADY_EXISTS.getMessage(" " + file.getOriginalFilename() + " for camera with ID: " + hardwareID)
+                    FileExceptionEnum.ALREADY_EXISTS.getMessage(" " + file.getOriginalFilename() + " for camera with ID: " + hardwareID)
             );
         }
 
@@ -86,22 +83,30 @@ public class FilesService {
         createDirectoriesIfNotExist(path);
         Path storePath = getStorePath(path, file.getOriginalFilename());
 
-        if(replaceExisting && currentPhoto != null && !Files.exists(storePath)) {
-            deleteFile(Path.of(currentPhoto.getFilePath()));
-            photoRepository.delete(currentPhoto);
+        if(replaceExisting && currentFileEntity != null && !Files.exists(storePath)) {
+            switch (photoType) {
+                case VIEW_FROM_CAMERA -> camera.setViewFromCameraFileEntity(null);
+                case VIEW_TO_CAMERA -> camera.setViewToCameraFileEntity(null);
+            };
+            deleteFile(Path.of(currentFileEntity.getFilePath()));
+            fileRepository.delete(currentFileEntity);
         }
 
         switch (photoType) {
-            case VIEW_FROM_CAMERA -> camera.setViewFromCameraPhoto(saveFileToPath(file, storePath));
-            case VIEW_TO_CAMERA -> camera.setViewToCameraPhoto(saveFileToPath(file, storePath));
+            case VIEW_FROM_CAMERA -> camera.setViewFromCameraFileEntity(saveFileToPath(file, storePath));
+            case VIEW_TO_CAMERA -> camera.setViewToCameraFileEntity(saveFileToPath(file, storePath));
         }
         return hardwareService.getHardwareById(hardwareID);
     }
 
     @Transactional
     public void uploadPhotoToReport(Long reportId, MultipartFile file) {
-        Report report = reportService.findReportById(reportId);
-        reportService.validateReportIsOpen(report);
+        Report report = reportRepository.findById(reportId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        ResourceNotFoundExceptionEnum.REPORT_NOT_FOUND.build(reportId)));
+
+        // TODO. FIX this entire class to get order
+        // reportRepository.validateReportIsOpen(report);
 
         validateIsImage(file);
 
@@ -110,71 +115,143 @@ public class FilesService {
 
         Path storePath = getStorePath(path, file.getOriginalFilename());
         report.setUpdatedAt(OffsetDateTime.now());
-        report.getPhotos().add(saveFileToPath(file, storePath));
+        report.getFileEntities().add(saveFileToPath(file, storePath));
+    }
+
+    @Transactional
+    public void deletePhotoFromReport(Long reportId, Long photoId) {
+        Report report = reportRepository.findById(reportId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        ResourceNotFoundExceptionEnum.REPORT_NOT_FOUND.build(reportId)));
+        // TODO. FIX this entire class to get order
+        // reportRepository.validateReportIsOpen(report);
+        FileEntity fileEntity = report.getFileEntities().stream().filter(p -> p.getId().equals(photoId)).findFirst().orElseThrow(()->
+                new FileException(FileExceptionEnum.FILE_NOT_FOUND.getMessage(" for photo with ID: " + photoId + " in report with ID: " + reportId)));
+        deleteFile(Path.of(fileEntity.getFilePath()));
+        fileRepository.delete(fileEntity);
+        report.getFileEntities().remove(fileEntity);
+        report.setUpdatedAt(OffsetDateTime.now());
     }
 
     private void validateIsImage(MultipartFile file) {
         if (file.isEmpty() || !Objects.requireNonNull(file.getContentType()).startsWith("image/")) {
-            throw new FileException(FileEnum.IMAGE_FORMAT_ERROR.getMessage());
+            throw new FileException(FileExceptionEnum.IMAGE_FORMAT_ERROR.getMessage());
         }
     }
 
-    private void createDirectoriesIfNotExist(Path savePath){
+    public void validateNotEmpty(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new FileException(FileExceptionEnum.INVALID_FILE.getMessage());
+        }
+    }
+
+
+    public void createDirectoriesIfNotExist(Path savePath){
         try {
             Files.createDirectories(savePath);
         }catch (IOException e) {
-            throw new FileException(FileEnum.DIRECTORY_CREATION_ERROR.getMessage(savePath.toString()));
+            throw new FileException(FileExceptionEnum.DIRECTORY_CREATION_ERROR.getMessage(savePath.toString()));
         }
     }
 
     private Path getPathOfClient(Long clientId) {
-        return Path.of ("uploads", "Client-" + clientId);
+        return Path.of (storagePath, "Client-" + clientId);
+    }
+
+    public Path getPathOfProjectFiles(Branch project) {
+        return Path.of (storagePath,
+                "Client-" + project.getClient().getId(),
+                "Project-" + project.getId(),
+                "Files"
+                );
     }
 
     private Path getPathOfReport(Report report) {
-        return Path.of ("uploads",
+        return Path.of (storagePath,
                 "Client-" + report.getHardware().getBranch().getClient().getId(),
-                "Branch-" + report.getHardware().getBranch().getId(),
+                "Project-" + report.getHardware().getBranch().getId(),
                 "Hardware-" + report.getHardware().getId(),
                 "Reports",  "Report-" + report.getId());
     }
 
     private Path getPathOfCamera(Camera camera) {
-        return Path.of ("uploads",
+        return Path.of (storagePath,
                 "Client-" + camera.getBranch().getClient().getId(),
-                "Branch-" + camera.getBranch().getId(),
+                "Project-" + camera.getBranch().getId(),
                 "Hardware-" + camera.getId());
     }
 
-    private Path getStorePath(Path path, String fileName) {
+    public Path getStorePath(Path path, String fileName) {
         fileName = fileName.trim().replaceAll("[^a-zA-Z0-9-_.]", "_");
         return path.resolve(fileName);
     }
 
-    private Photo saveFileToPath(MultipartFile file, Path storePath) {
+    /* TODO. VERIFY ALL FUNCTIONS ON THIS CLASS */
+    /* NEW **************************************/
+
+    public FileEntity saveFile(MultipartFile file, Path storePath, FileCategory fileCategory) {
+        if (Files.exists(storePath)) {
+            throw new FileException(FileExceptionEnum.DUPLICATE_FILE.getMessage(" " + file.getOriginalFilename()));
+        }
+        try {
+            UserEntity currentUser = userEntityService.authenticateCurrentUser();
+            file.transferTo(storePath);
+            Path relative = Path.of(storagePath).relativize(storePath);
+
+            System.out.println("Relative : " + relative);
+            System.out.println("FilePath : " + storePath);
+
+            FileEntity fileEntity = new FileEntity();
+            fileEntity.setFilename(file.getOriginalFilename());
+            fileEntity.setContentType(file.getContentType());
+            fileEntity.setSize(file.getSize());
+            fileEntity.setFilePath("uploads/" + relative.toString().replace("\\", "/"));
+            fileEntity.setUploadedAt(OffsetDateTime.now());
+            fileEntity.setCategory(fileCategory);
+            fileEntity.setUser(currentUser);
+            return fileRepository.save(fileEntity);
+        } catch (IOException e) {
+            throw new FileException(FileExceptionEnum.SAVE_ERROR.getMessage());
+        }
+    }
+        /* ******************************************/
+
+    private FileEntity saveFileToPath(MultipartFile file, Path storePath) {
         if(Files.exists(storePath)) {
-            throw new FileException(FileEnum.DUPLICATE_FILE.getMessage(" " + file.getOriginalFilename()));
+            throw new FileException(FileExceptionEnum.DUPLICATE_FILE.getMessage(" " + file.getOriginalFilename()));
         }else {
             try {
+                UserEntity currentUser = userEntityService.authenticateCurrentUser();
                 file.transferTo(storePath);
-                Photo photo = new Photo(
+
+                Path relative = Path.of(storagePath).relativize(storePath);
+
+                FileEntity fileEntity = new FileEntity(
                         file.getOriginalFilename(),
                         file.getContentType(),
                         file.getSize(),
-                        storePath.toString().replaceAll("\\\\", "/"),
+                        "uploads/" + relative.toString().replace("\\", "/"),
                         OffsetDateTime.now());
-                return photoRepository.save(photo);
+                fileEntity.setUser(currentUser);
+                return fileRepository.save(fileEntity);
             } catch (IOException e) {
-                throw new FileException(FileEnum.SAVE_ERROR.getMessage());
+                throw new FileException(FileExceptionEnum.SAVE_ERROR.getMessage());
             }
         }
     }
 
     private void deleteFile(Path filePath) {
         try {
-            Files.deleteIfExists(filePath);
-        } catch (IOException e) {
-            throw new FileException(FileEnum.SAVE_ERROR.getMessage(" Could not delete the old file at path: " + filePath.toString()));
+            String relativePath = filePath.toString()
+                    .replace("uploads\\", "")
+                    .replace("uploads/", "");
+
+            Path target = Path.of(storagePath).resolve(relativePath);
+
+            Files.deleteIfExists(target);
+            System.out.println("FILEPATH: " + target);
+        } catch (Exception e) {
+            throw new FileException(FileExceptionEnum.SAVE_ERROR.getMessage(" Could not delete the old file at path: " + e.getMessage()));
         }
     }
 }

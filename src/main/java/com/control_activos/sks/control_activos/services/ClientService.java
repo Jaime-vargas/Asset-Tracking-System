@@ -14,7 +14,7 @@ import com.control_activos.sks.control_activos.models.dto.clientDTO.ClientTableR
 import com.control_activos.sks.control_activos.models.dto.reportDTO.ReportCountDTO;
 import com.control_activos.sks.control_activos.models.entity.Branch;
 import com.control_activos.sks.control_activos.models.entity.Client;
-import com.control_activos.sks.control_activos.models.entity.Photo;
+import com.control_activos.sks.control_activos.models.entity.FileEntity;
 import com.control_activos.sks.control_activos.repository.BranchRepository;
 import com.control_activos.sks.control_activos.repository.ClientRepository;
 import com.control_activos.sks.control_activos.repository.ReportRepository;
@@ -120,7 +120,9 @@ public class ClientService {
                 row.getBranches(),
                 row.getTotalHardware(),
                 reportsByClientId.getOrDefault(row.getId(), List.of()),
-                PhotoMapper.toPhotoDTO(Optional.ofNullable(row.getPhoto()).orElse(new Photo()))
+                /* */
+                /* */
+                PhotoMapper.toPhotoDTO(Optional.ofNullable(row.getPhoto()).orElse(new FileEntity()))
         )).toList();
     }
 

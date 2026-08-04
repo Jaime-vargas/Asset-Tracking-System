@@ -1,30 +1,33 @@
 package com.control_activos.sks.control_activos.services;
 
+import com.control_activos.sks.control_activos.enums.OperationNotAllowedExceptionEnum;
 import com.control_activos.sks.control_activos.enums.ResourceNotFoundExceptionEnum;
+import com.control_activos.sks.control_activos.exception.OperationNotAllowedException;
 import com.control_activos.sks.control_activos.exception.ResourceNotFoundException;
 import com.control_activos.sks.control_activos.mapper.CameraMapper;
-import com.control_activos.sks.control_activos.mapper.HardwareMapper;
 import com.control_activos.sks.control_activos.models.dto.cameraDTO.CameraEditRequestDTO;
 import com.control_activos.sks.control_activos.models.dto.cameraDTO.CameraEditResponseDTO;
-import com.control_activos.sks.control_activos.models.dto.hardwareDTO.HardwareDetailDTO;
 import com.control_activos.sks.control_activos.models.entity.Camera;
 import com.control_activos.sks.control_activos.models.entity.Branch;
+import com.control_activos.sks.control_activos.repository.BranchRepository;
 import com.control_activos.sks.control_activos.repository.CameraRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CameraService {
 
+    private final BranchRepository branchRepository;
     private final CameraRepository cameraRepository;
     private final FormatDataValidationService formatDataValidationService;
-    private final BranchService branchService;
-    public CameraService(CameraRepository cameraRepository, FormatDataValidationService formatDataValidationService, BranchService branchService) {
-        this.cameraRepository = cameraRepository;
-        this.formatDataValidationService = formatDataValidationService;
-        this.branchService = branchService;
+
+    public List<Camera> getCamerasByBranchId(Long branchId) {
+        return cameraRepository.findByBranchId(branchId);
     }
 
     public CameraEditResponseDTO getCameraEditData(Long cameraId) {
@@ -34,7 +37,9 @@ public class CameraService {
 
     @Transactional
     public CameraEditResponseDTO saveCamera(Long branchId, CameraEditRequestDTO cameraEditRequestDTO) {
-        Branch branch = branchService.findBranchById(branchId);
+        Branch branch = branchRepository.findById(branchId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        ResourceNotFoundExceptionEnum.BRANCH_NOT_FOUND.build(branchId)));
         formatDataValidation(cameraEditRequestDTO);
         Camera camera = CameraMapper.toCameraEntity(cameraEditRequestDTO, branch);
         camera = cameraRepository.save(camera);
@@ -70,6 +75,14 @@ public class CameraService {
         return cameraRepository.findById(cameraId)
                 .orElseThrow(() -> new ResourceNotFoundException(ResourceNotFoundExceptionEnum.CAMERA_NOT_FOUND.getMessage()));
     }
+
+    public void existsByIdAndBranchId(Long cameraId, Long branchId) {
+        boolean exists = !cameraRepository.existsByIdAndBranchId(cameraId, branchId);
+        if (exists) {
+            throw new OperationNotAllowedException(OperationNotAllowedExceptionEnum.CAMERA_NOT_BELONG_TO_SUCURSAL.getMessage());
+        }
+    }
+
 
     /*    IMPLEMENT METHOD TO VALIDATE DUPLICATE DATA IN CAMERA ENTITY, THIS METHOD WILL BE USED IN BOTH CREATE AND EDIT CAMERA, IN CREATE CAMERA THE CURRENT CAMERA ID WILL BE NULL, IN EDIT CAMERA THE CURRENT CAMERA ID WILL BE THE ID OF THE CAMERA BEING EDITED, THIS WAY WE CAN EXCLUDE THE CURRENT CAMERA FROM THE DUPLICATE CHECKS
 

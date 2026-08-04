@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface CameraRepository extends JpaRepository<Camera, Long> {
     List<Camera> findByBranchId(Long branchId);
+    boolean existsByIdAndBranchId(Long id, Long branch_id);
 
     boolean existsByCameraIdAndBranchIdAndIdNot(String cameraId, Long branchId, Long id);
     boolean existsByNameAndBranchIdAndIdNot(String name, Long branchId, Long id);
