@@ -15,4 +15,5 @@ public class UserEntityResponseDTO {
     String username;
     String fullName;
     String role;
+    boolean active;
 }

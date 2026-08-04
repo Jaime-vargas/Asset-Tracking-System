@@ -1,6 +1,8 @@
 package com.control_activos.sks.control_activos.models.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jdk.jfr.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,11 +20,20 @@ public class Photo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotNull
     private String filename;
+    @NotNull
     private String contentType;
+    @NotNull
     private Long size;
+    @NotNull
     private String filePath;
+    @NotNull
     private OffsetDateTime uploadedAt;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
 
     public Photo (String filename, String contentType, Long size, String filePath, OffsetDateTime uploadedAt) {
         this.filename = filename;

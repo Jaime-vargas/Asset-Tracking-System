@@ -1,9 +1,0 @@
-package com.control_activos.sks.control_activos.repository;
-
-import com.control_activos.sks.control_activos.models.entity.Photo;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
-
-public interface PhotoRepository extends JpaRepository<Photo, Long> {
-}
