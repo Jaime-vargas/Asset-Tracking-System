@@ -16,6 +16,7 @@ import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import io.nayuki.qrcodegen.QrCode;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @RestController
-@RequestMapping("/jwt")
+@RequestMapping("/api/v1")
 public class TestingJwtController {
 
     @Autowired
@@ -112,7 +113,7 @@ public class TestingJwtController {
 
 
 
-    public byte[] generateQrPdf(Long branchId) throws IOException {
+    public byte[] generateQrPdf(Long branchId) {
 
 
         List<Hardware> hardwareList = hardwareRepository.findHardwareByBranchId(branchId);
@@ -137,7 +138,18 @@ public class TestingJwtController {
             }
         });
 
+        String cssContent = null;
+        try {
+            ClassPathResource css = new ClassPathResource("static/css/qrFormat.css");
+            cssContent = css.getContentAsString(java.nio.charset.StandardCharsets.UTF_8);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         Context context = new Context();
+
+        context.setVariable("embeddedCss", cssContent);
 
         context.setVariable("qr", qrCodes);
         context.setVariable("cameras", hardwareList);
