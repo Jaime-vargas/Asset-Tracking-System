@@ -144,6 +144,7 @@ h1, h2, h3, p {
     color: white;
     text-align: center;
     overflow: hidden;
+    height: 400px;
 }
 .image-cell p{
     padding: 5px 0;

@@ -11,7 +11,7 @@ body div{
 .page{
     background: white;
     width: 192mm;
-    min-height: 278mm;
+    min-height: 276mm;
     box-sizing: border-box;
     overflow: hidden;
 }

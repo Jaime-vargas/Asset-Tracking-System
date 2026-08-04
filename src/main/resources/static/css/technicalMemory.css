@@ -16,7 +16,7 @@ body{
 
 .page{
     width: 280mm;
-    min-height: 192mm;
+    min-height: 176mm;
     background: white;
     margin: 0 auto;
     box-sizing: border-box;
@@ -81,8 +81,9 @@ h1, h2, h3, p {
 }
 
 .logo{
-    width: 100px;
+    width: 30mm;
     height: auto;
+    object-fit: contain;
 }
 
 

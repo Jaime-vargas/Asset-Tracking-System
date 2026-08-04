@@ -7,9 +7,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>Photo Report</title>
-    <link rel="stylesheet"
-          type="text/css"
-          href="src/main/resources/static/css/photoReport.css" />
+    <style th:utext="${embeddedCss}"></style>
 </head>
 <body>
 <div class="page"
@@ -19,15 +17,15 @@
     <!-- HEADER -->
     <div class="row header">
         <div class="col-4">
-            <img src="src/main/resources/static/assets/logo.png" alt="logo" class="logo" />
+            <img class="logo" th:src="${logo}" alt="Logo" />
         </div>
         <div class="col-16 title-header">
             <h1>MEMORIA FOTOGRÁFICA</h1>
             <p>Detalle de Cámara</p>
         </div>
         <div class="col-4">
-            <img th:if="${branch.getClient().getPhoto().getFilePath() != null}"
-                 th:src="${branch.getClient().getPhoto().getFilePath() }" class="logo" />
+            <img th:if="${branch.getClient().getPhoto() != null}"
+                 th:src="${storagePath + branch.getClient().getPhoto().getFilePath().replace('uploads/','')}" class="logo" />
         </div>
     </div>
     <!-- /HEADER -->
@@ -54,7 +52,7 @@
                 <div class="row">
                     <div class="col-4">
                         <div class="circle-logo">
-                            <img src="src/main/resources/static/assets/calendar.png" class="icon" />
+                            <img class="icon" th:src="${calendarIcon}" alt="Logo" />
                         </div>
                     </div>
                     <div class="col-16">
@@ -67,7 +65,7 @@
                 <div class="row">
                     <div class="col-4">
                         <div class="circle-logo">
-                            <img src="src/main/resources/static/assets/doc.png" class="icon" />
+                            <img class="icon" th:src="${documentIcon}" alt="Logo" />
                         </div>
                     </div>
                     <div class="col-16">
@@ -184,16 +182,16 @@
         <div class="row">
             <div class="col-12 image-cell">
                 <p>VISTA HACIA LA CÁMARA</p>
-                <img th:if="${camera.getViewToCameraPhoto() != null}"
+                <img th:if="${camera.getViewToCameraFileEntity() != null}"
                      class="image"
-                     th:src="${camera.getViewToCameraPhoto().getFilePath()}"/>
+                     th:src="${storagePath + camera.getViewToCameraFileEntity().getFilePath().replace('uploads/','')}"/>
             </div>
             <div class="separator"></div>
             <div class="col-12 image-cell">
                 <p>VISTA DESDE LA CÁMARA</p>
-                <img th:if="${camera.getViewFromCameraPhoto() != null}"
+                <img th:if="${camera.getViewFromCameraFileEntity() != null}"
                      class="image"
-                     th:src="${camera.getViewFromCameraPhoto().getFilePath()}"/>
+                     th:src="${storagePath + camera.getViewFromCameraFileEntity().getFilePath().replace('uploads/','')}"/>
             </div>
         </div>
     </div>
