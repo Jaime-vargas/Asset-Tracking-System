@@ -51,6 +51,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         // Extract payload from token
         String subject = jwtUtil.getSubject(token);
         UserEntity userEntity = userEntityService.findByUserEntityByUsername(subject);
+        userEntityService.isUserEnabled(userEntity);
 
         // Extract role from database
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
